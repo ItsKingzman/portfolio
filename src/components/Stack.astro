@@ -1,0 +1,139 @@
+﻿---
+import { config } from '../data/config.js';
+---
+
+<section class="stack section">
+  <div class="container">
+    <h2 class="section-title">My Stack</h2>
+    
+    {config.stack.frontend && config.stack.frontend.length > 0 && (
+      <div class="stack-category">
+        <h3 class="category-title">Frontend</h3>
+        <div class="tech-grid">
+          {config.stack.frontend.map(tech => (
+            <div class="tech-item">
+              <div class="tech-logo">
+                <img src={tech.logo} alt={tech.name} width="48" height="48" />
+              </div>
+              <span class="tech-name">{tech.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+    
+    {config.stack.cms && config.stack.cms.length > 0 && (
+      <div class="stack-category">
+        <h3 class="category-title">CMS</h3>
+        <div class="tech-grid">
+          {config.stack.cms.map(tech => (
+            <div class="tech-item">
+              <div class="tech-logo">
+                <img src={tech.logo} alt={tech.name} width="48" height="48" />
+              </div>
+              <span class="tech-name">{tech.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+    
+    {config.stack.tools && config.stack.tools.length > 0 && (
+      <div class="stack-category">
+        <h3 class="category-title">Tools</h3>
+        <div class="tech-grid">
+          {config.stack.tools.map(tech => (
+            <div class="tech-item">
+              <div class="tech-logo">
+                <img src={tech.logo} alt={tech.name} width="48" height="48" />
+              </div>
+              <span class="tech-name">{tech.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .stack {
+    margin-left: 280px;
+    padding: var(--spacing-xl) 0;
+    background: var(--color-bg-secondary);
+  }
+  
+  .section-title {
+    text-align: center;
+    margin-bottom: 4rem;
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+  
+  .stack-category {
+    margin-bottom: 4rem;
+  }
+  
+  .category-title {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--color-text-secondary);
+    margin-bottom: 2rem;
+  }
+  
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 2rem;
+  }
+  
+  .tech-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--color-bg);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-border);
+    transition: all 0.3s ease;
+  }
+  
+  .tech-item:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-accent);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  }
+  
+  .tech-logo {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .tech-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  .tech-name {
+    font-size: 0.875rem;
+    text-align: center;
+    color: var(--color-text);
+    font-weight: 500;
+  }
+  
+  @media (max-width: 968px) {
+    .stack {
+      margin-left: 0;
+    }
+    
+    .tech-grid {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 1rem;
+    }
+  }
+</style>

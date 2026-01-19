@@ -1,0 +1,367 @@
+﻿---
+import { config } from '../data/config.js';
+---
+
+<section class="projects section" id="projects">
+  <div class="container">
+    <h2 class="section-title">Projects</h2>
+    
+    <div class="projects-grid">
+      {config.projects.map((project, index) => (
+        <article class="project-card" data-index={index}>
+          <div class="project-image">
+            {project.image && (
+              <img src={project.image} alt={project.title} loading="lazy" />
+            )}
+            <div class="project-overlay"></div>
+          </div>
+          
+                    <div class="project-content">
+            {project.link ? (
+              <a href={project.link} target="_blank" rel="noopener">
+                <h3 class="project-title">{project.title}</h3>
+              </a>
+            ) : (
+              <h3 class="project-title">{project.title}</h3>
+            )}
+            <p class="project-description">{project.description}</p>
+            
+            {project.tags && project.tags.length > 0 && (
+              <div class="project-tags">
+                {project.tags.map(tag => (
+                  <span class="project-tag">{tag}</span>
+                ))}
+              </div>
+            )}
+            
+            <div class="project-links">
+              {project.link && (
+                <a href={project.link} target="_blank" rel="noopener" class="project-link">
+                  <span>View Site</span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 8H13M13 8L8 3M13 8L8 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              )}
+              {project.github && (
+                <a href={project.github} target="_blank" rel="noopener" class="project-link">
+                  <span>GitHub</span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 8H13M13 8L8 3M13 8L8 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              )}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects {
+    margin-left: 280px;
+    padding: var(--spacing-xl) 0;
+    background: var(--color-bg-secondary);
+    overflow: hidden;
+  }
+  
+  .section-title {
+    text-align: center;
+    margin-bottom: 4rem;
+    font-size: clamp(2rem, 4vw, 3rem);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0;
+  }
+  
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .project-card {
+    background: var(--color-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(50px);
+    position: relative;
+  }
+  
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: var(--border-radius);
+    padding: 2px;
+    background: linear-gradient(135deg, var(--color-accent), transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .project-card:hover::before {
+    opacity: 1;
+  }
+  
+  .project-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+  }
+  
+.project-image {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: visible; /* Changed from hidden */
+  background: var(--color-bg-tertiary);
+  padding: 20px; /* Add padding */
+}
+
+.project-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Changed from cover */
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+  
+  .project-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(10, 10, 10, 0.8) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .project-card:hover .project-overlay {
+    opacity: 1;
+  }
+  
+  .project-card:hover .project-image img {
+    transform: scale(1.1);
+  }
+  
+  .project-content {
+    padding: 2rem;
+  }
+  
+  .project-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-text);
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+
+  /* Make the parent link inherit styles */
+  .project-content > a {
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .project-content > a:hover .project-title {
+    color: var(--color-accent);
+  }
+
+  .project-title::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--color-accent);
+    transition: width 0.3s ease;
+  }
+
+  .project-content > a:hover .project-title::after {
+    width: 100%;
+  }
+  
+  .project-description {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .project-tag {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-secondary);
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .project-card:hover .project-tag {
+    background: var(--color-accent);
+    color: white;
+    transform: translateY(-2px);
+  }
+  
+  .project-links {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .project-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-accent);
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .project-link svg {
+    transition: transform 0.3s ease;
+  }
+  
+  .project-link:hover {
+    color: var(--color-accent-hover);
+  }
+  
+  .project-link:hover svg {
+    transform: translateX(4px);
+  }
+  
+  @media (max-width: 968px) {
+    .projects {
+      margin-left: 0;
+    }
+    
+    .projects-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>
+
+<script>
+  // Wait for DOM to be ready
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Import anime.js
+    const animeModule = await import('animejs');
+    const anime = animeModule.default;
+    
+    // Animate section title on load
+    anime({
+      targets: '.section-title',
+      opacity: [0, 1],
+      translateY: [-30, 0],
+      duration: 1200,
+      easing: 'easeOutExpo',
+    });
+    
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const card = entry.target;
+          const index = parseInt(card.getAttribute('data-index') || '0');
+          
+          // Staggered entrance animation
+          anime({
+            targets: card,
+            opacity: [0, 1],
+            translateY: [50, 0],
+            scale: [0.95, 1],
+            duration: 1200,
+            delay: index * 125,
+            easing: 'easeOutExpo',
+          });
+          
+          // Animate tags with bounce effect
+          anime({
+            targets: card.querySelectorAll('.project-tag'),
+            opacity: [0, 1],
+            translateY: [20, 0],
+            scale: [0.8, 1],
+            duration: 800,
+            delay: anime.stagger(100, {start: 600 + index * 150}),
+            easing: 'spring(1, 80, 10, 0)',
+          });
+          
+          // Animate links
+          anime({
+            targets: card.querySelectorAll('.project-link'),
+            opacity: [0, 1],
+            translateX: [-20, 0],
+            duration: 800,
+            delay: anime.stagger(100, {start: 800 + index * 150}),
+            easing: 'easeOutExpo',
+          });
+          
+          observer.unobserve(card);
+        }
+      });
+    }, observerOptions);
+    
+    // Observe all project cards
+    document.querySelectorAll('.project-card').forEach((card) => {
+      observer.observe(card);
+    });
+    
+    // Add magnetic effect on hover
+    document.querySelectorAll('.project-card').forEach((card) => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const deltaX = (x - centerX) / centerX;
+        const deltaY = (y - centerY) / centerY;
+        
+        anime({
+          targets: card.querySelector('.project-image img'),
+          translateX: deltaX * 10,
+          translateY: deltaY * 10,
+          duration: 150,
+          easing: 'easeOutQuad',
+        });
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        anime({
+          targets: card.querySelector('.project-image img'),
+          translateX: 0,
+          translateY: 0,
+          duration: 100,
+          easing: 'easeOutElastic(1, .6)',
+        });
+      });
+    });
+  });
+</script>

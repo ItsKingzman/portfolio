@@ -1,0 +1,69 @@
+﻿---
+import { config } from '../data/config.js';
+---
+
+<section class="contact section">
+  <div class="container">
+    <div class="contact-content">
+      <h2 class="contact-heading">{config.contact.heading}</h2>
+      {config.contact.subheading && (
+        <p class="contact-subheading">{config.contact.subheading}</p>
+      )}
+      <a href={`mailto:${config.personal.email}`} class="contact-email">
+        {config.personal.email}
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    margin-left: 280px;
+    padding: var(--spacing-xl) 0;
+    text-align: center;
+  }
+  
+  .contact-content {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  .contact-heading {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin-bottom: 1rem;
+    color: var(--color-text);
+  }
+  
+  .contact-subheading {
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+  }
+  
+  .contact-email {
+    display: inline-block;
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    color: var(--color-accent);
+    font-weight: 600;
+    padding: 1rem 2rem;
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+  }
+  
+  .contact-email:hover {
+    transform: translateY(-2px);
+    color: var(--color-accent-hover);
+  }
+  
+  @media (max-width: 968px) {
+    .contact {
+      margin-left: 0;
+    }
+    
+    .contact-email {
+      font-size: 1.25rem;
+      word-break: break-all;
+    }
+  }
+</style>
