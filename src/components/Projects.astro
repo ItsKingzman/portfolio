@@ -95,6 +95,26 @@ import { config } from '../data/config.js';
     position: relative;
   }
   
+  /* Fallback: Show projects if JavaScript fails or is disabled */
+  .projects-grid:not(.js-loaded) .project-card {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Fallback after 3 seconds if JS hasn't loaded */
+  @media (prefers-reduced-motion: no-preference) {
+    .projects-grid:not(.js-loaded) .project-card {
+      animation: fadeInFallback 0.1s ease-out 3s forwards;
+    }
+  }
+  
+  @keyframes fadeInFallback {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
   .project-card::before {
     content: '';
     position: absolute;
@@ -264,32 +284,92 @@ import { config } from '../data/config.js';
 <script>
   // Wait for DOM to be ready
   document.addEventListener('DOMContentLoaded', async () => {
-    // Import anime.js
-    const animeModule = await import('animejs');
-    const anime = animeModule.default;
-    
-    // Animate section title on load
-    anime({
-      targets: '.section-title',
-      opacity: [0, 1],
-      translateY: [-30, 0],
-      duration: 1200,
-      easing: 'easeOutExpo',
-    });
-    
-    // Intersection Observer for scroll animations
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -100px 0px'
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const card = entry.target;
+    try {
+      // Mark that JavaScript is loaded
+      const projectsGrid = document.querySelector('.projects-grid');
+      if (projectsGrid) {
+        projectsGrid.classList.add('js-loaded');
+      }
+      
+      // Import anime.js
+      const animeModule = await import('animejs');
+      const anime = animeModule.default;
+      
+      // Animate section title on load
+      anime({
+        targets: '.section-title',
+        opacity: [0, 1],
+        translateY: [-30, 0],
+        duration: 1200,
+        easing: 'easeOutExpo',
+      });
+      
+      // Intersection Observer for scroll animations
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+      };
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const card = entry.target;
+            const index = parseInt(card.getAttribute('data-index') || '0');
+            
+            // Staggered entrance animation
+            anime({
+              targets: card,
+              opacity: [0, 1],
+              translateY: [50, 0],
+              scale: [0.95, 1],
+              duration: 1200,
+              delay: index * 125,
+              easing: 'easeOutExpo',
+            });
+            
+            // Animate tags with bounce effect
+            const tags = card.querySelectorAll('.project-tag');
+            if (tags.length > 0) {
+              anime({
+                targets: tags,
+                opacity: [0, 1],
+                translateY: [20, 0],
+                scale: [0.8, 1],
+                duration: 800,
+                delay: anime.stagger(100, {start: 600 + index * 150}),
+                easing: 'spring(1, 80, 10, 0)',
+              });
+            }
+            
+            // Animate links
+            const links = card.querySelectorAll('.project-link');
+            if (links.length > 0) {
+              anime({
+                targets: links,
+                opacity: [0, 1],
+                translateX: [-20, 0],
+                duration: 800,
+                delay: anime.stagger(100, {start: 800 + index * 150}),
+                easing: 'easeOutExpo',
+              });
+            }
+            
+            observer.unobserve(card);
+          }
+        });
+      }, observerOptions);
+      
+      // Observe all project cards
+      const projectCards = document.querySelectorAll('.project-card');
+      projectCards.forEach((card) => {
+        observer.observe(card);
+        
+        // If card is already in viewport, trigger animation immediately
+        const rect = card.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        if (isVisible) {
+          observer.unobserve(card);
           const index = parseInt(card.getAttribute('data-index') || '0');
-          
-          // Staggered entrance animation
           anime({
             targets: card,
             opacity: [0, 1],
@@ -299,69 +379,61 @@ import { config } from '../data/config.js';
             delay: index * 125,
             easing: 'easeOutExpo',
           });
-          
-          // Animate tags with bounce effect
-          anime({
-            targets: card.querySelectorAll('.project-tag'),
-            opacity: [0, 1],
-            translateY: [20, 0],
-            scale: [0.8, 1],
-            duration: 800,
-            delay: anime.stagger(100, {start: 600 + index * 150}),
-            easing: 'spring(1, 80, 10, 0)',
-          });
-          
-          // Animate links
-          anime({
-            targets: card.querySelectorAll('.project-link'),
-            opacity: [0, 1],
-            translateX: [-20, 0],
-            duration: 800,
-            delay: anime.stagger(100, {start: 800 + index * 150}),
-            easing: 'easeOutExpo',
-          });
-          
-          observer.unobserve(card);
         }
       });
-    }, observerOptions);
-    
-    // Observe all project cards
-    document.querySelectorAll('.project-card').forEach((card) => {
-      observer.observe(card);
-    });
-    
-    // Add magnetic effect on hover
-    document.querySelectorAll('.project-card').forEach((card) => {
-      card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        
-        const deltaX = (x - centerX) / centerX;
-        const deltaY = (y - centerY) / centerY;
-        
-        anime({
-          targets: card.querySelector('.project-image img'),
-          translateX: deltaX * 10,
-          translateY: deltaY * 10,
-          duration: 150,
-          easing: 'easeOutQuad',
+      
+      // Add magnetic effect on hover
+      projectCards.forEach((card) => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          
+          const deltaX = (x - centerX) / centerX;
+          const deltaY = (y - centerY) / centerY;
+          
+          const img = card.querySelector('.project-image img');
+          if (img) {
+            anime({
+              targets: img,
+              translateX: deltaX * 10,
+              translateY: deltaY * 10,
+              duration: 150,
+              easing: 'easeOutQuad',
+            });
+          }
         });
+        
+        card.addEventListener('mouseleave', () => {
+          const img = card.querySelector('.project-image img');
+          if (img) {
+            anime({
+              targets: img,
+              translateX: 0,
+              translateY: 0,
+              duration: 100,
+              easing: 'easeOutElastic(1, .6)',
+            });
+          }
+        });
+      });
+    } catch (error) {
+      // If animation fails, show projects anyway
+      console.error('Animation error:', error);
+      const projectCards = document.querySelectorAll('.project-card');
+      projectCards.forEach((card) => {
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
       });
       
-      card.addEventListener('mouseleave', () => {
-        anime({
-          targets: card.querySelector('.project-image img'),
-          translateX: 0,
-          translateY: 0,
-          duration: 100,
-          easing: 'easeOutElastic(1, .6)',
-        });
-      });
-    });
+      const sectionTitle = document.querySelector('.section-title');
+      if (sectionTitle) {
+        sectionTitle.style.opacity = '1';
+        sectionTitle.style.transform = 'translateY(0)';
+      }
+    }
   });
 </script>
