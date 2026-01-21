@@ -6,7 +6,7 @@ import { config } from '../data/config.js';
   <div class="container">
     <div class="stats-grid">
       {config.stats.map((stat, index) => (
-        <div class="stat-card" style={`animation-delay: ${index * 0.1}s`}>
+        <div class="stat-card">
           <h3 class="stat-number">{stat.number}</h3>
           <p class="stat-label">{stat.label}</p>
         </div>
@@ -31,7 +31,7 @@ import { config } from '../data/config.js';
   .stat-card {
     text-align: center;
     opacity: 0;
-    animation: fadeInUp 0.6s ease-out forwards;
+    transform: translateY(30px) scale(0.9);
   }
   
   .stat-number {
@@ -53,15 +53,81 @@ import { config } from '../data/config.js';
       margin-left: 0;
     }
   }
-  
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const animeModule = await import('animejs');
+      const anime = animeModule.default;
+      
+      // Animate stats section
+      const statsSection = document.querySelector('.stats');
+      if (statsSection) {
+        const observerOptions = {
+          threshold: 0.2,
+          rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const statCards = entry.target.querySelectorAll('.stat-card');
+              
+              // Animate numbers counting up
+              statCards.forEach((card, index) => {
+                const numberEl = card.querySelector('.stat-number');
+                const finalValue = numberEl?.textContent || '';
+                
+                anime({
+                  targets: card,
+                  opacity: [0, 1],
+                  translateY: [30, 0],
+                  scale: [0.9, 1],
+                  duration: 800,
+                  delay: index * 100,
+                  easing: 'easeOutCubic',
+                });
+                
+                // Optional: Add number counting animation
+                if (numberEl && finalValue.match(/\d+/)) {
+                  const numValue = parseInt(finalValue.replace(/\D/g, ''));
+                  if (numValue) {
+                    anime({
+                      targets: { value: 0 },
+                      value: numValue,
+                      duration: 1500,
+                      delay: index * 100 + 200,
+                      easing: 'easeOutExpo',
+                      update: function(anim) {
+                        const currentValue = Math.floor(anim.animatables[0].target.value);
+                        if (finalValue.includes('+')) {
+                          numberEl.textContent = currentValue + '+';
+                        } else if (finalValue.includes('K+')) {
+                          numberEl.textContent = currentValue + 'K+';
+                        } else {
+                          numberEl.textContent = currentValue;
+                        }
+                      }
+                    });
+                  }
+                }
+              });
+              
+              observer.unobserve(entry.target);
+            }
+          });
+        }, observerOptions);
+        
+        observer.observe(statsSection);
+      }
+    } catch (error) {
+      console.error('Animation error:', error);
+      // Fallback: show elements
+      document.querySelectorAll('.stat-card').forEach(el => {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
+    }
+  });
+</script>

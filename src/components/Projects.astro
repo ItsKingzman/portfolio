@@ -74,6 +74,7 @@ import { config } from '../data/config.js';
     text-transform: uppercase;
     letter-spacing: 0.05em;
     opacity: 0;
+    transform: translateY(20px);
   }
   
   .projects-grid {
@@ -91,7 +92,7 @@ import { config } from '../data/config.js';
     border: 1px solid var(--color-border);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 0;
-    transform: translateY(50px);
+    transform: translateY(60px);
     position: relative;
   }
   
@@ -295,14 +296,25 @@ import { config } from '../data/config.js';
       const animeModule = await import('animejs');
       const anime = animeModule.default;
       
-      // Animate section title on load
-      anime({
-        targets: '.section-title',
-        opacity: [0, 1],
-        translateY: [-30, 0],
-        duration: 1200,
-        easing: 'easeOutExpo',
-      });
+      // Animate section title with IntersectionObserver
+      const sectionTitle = document.querySelector('#projects .section-title');
+      if (sectionTitle) {
+        const titleObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              anime({
+                targets: sectionTitle,
+                opacity: [0, 1],
+                translateY: [30, 0],
+                duration: 1000,
+                easing: 'easeOutExpo',
+              });
+              titleObserver.unobserve(sectionTitle);
+            }
+          });
+        }, { threshold: 0.1 });
+        titleObserver.observe(sectionTitle);
+      }
       
       // Intersection Observer for scroll animations
       const observerOptions = {
@@ -316,15 +328,15 @@ import { config } from '../data/config.js';
             const card = entry.target;
             const index = parseInt(card.getAttribute('data-index') || '0');
             
-            // Staggered entrance animation
+            // Staggered entrance animation - smoother and more polished
             anime({
               targets: card,
               opacity: [0, 1],
-              translateY: [50, 0],
-              scale: [0.95, 1],
-              duration: 1200,
-              delay: index * 125,
-              easing: 'easeOutExpo',
+              translateY: [60, 0],
+              scale: [0.9, 1],
+              duration: 1000,
+              delay: index * 100,
+              easing: 'easeOutCubic',
             });
             
             // Animate tags with bounce effect
@@ -373,11 +385,11 @@ import { config } from '../data/config.js';
           anime({
             targets: card,
             opacity: [0, 1],
-            translateY: [50, 0],
-            scale: [0.95, 1],
-            duration: 1200,
-            delay: index * 125,
-            easing: 'easeOutExpo',
+            translateY: [60, 0],
+            scale: [0.9, 1],
+            duration: 1000,
+            delay: index * 100,
+            easing: 'easeOutCubic',
           });
         }
       });

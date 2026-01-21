@@ -8,7 +8,7 @@ import { config } from '../data/config.js';
     
     <div class="timeline">
       {config.experience.map((job, index) => (
-        <div class="timeline-item" style={`animation-delay: ${index * 0.15}s`}>
+        <div class="timeline-item">
           <div class="timeline-marker"></div>
           <div class="timeline-content">
             <h3 class="job-company">{job.company}</h3>
@@ -34,6 +34,8 @@ import { config } from '../data/config.js';
     text-align: center;
     margin-bottom: 4rem;
     font-size: clamp(2rem, 4vw, 3rem);
+    opacity: 0;
+    transform: translateY(20px);
   }
   
   .timeline {
@@ -57,7 +59,7 @@ import { config } from '../data/config.js';
     position: relative;
     padding-bottom: 3rem;
     opacity: 0;
-    animation: fadeInLeft 0.6s ease-out forwards;
+    transform: translateX(-30px);
   }
   
   .timeline-marker {
@@ -81,8 +83,9 @@ import { config } from '../data/config.js';
   }
   
   .timeline-content:hover {
-    transform: translateX(8px);
+    transform: translateX(10px);
     border-color: var(--color-accent);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
   }
   
   .job-company {
@@ -123,15 +126,61 @@ import { config } from '../data/config.js';
       left: -2rem;
     }
   }
-  
-  @keyframes fadeInLeft {
-    from {
-      opacity: 0;
-      transform: translateX(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const animeModule = await import('animejs');
+      const anime = animeModule.default;
+      
+      // Animate experience section
+      const experienceSection = document.querySelector('#experience');
+      if (experienceSection) {
+        const observerOptions = {
+          threshold: 0.1,
+          rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const sectionTitle = entry.target.querySelector('.section-title');
+              if (sectionTitle) {
+                anime({
+                  targets: sectionTitle,
+                  opacity: [0, 1],
+                  translateY: [20, 0],
+                  duration: 800,
+                  easing: 'easeOutExpo',
+                });
+              }
+              
+              // Animate timeline items with stagger
+              const timelineItems = entry.target.querySelectorAll('.timeline-item');
+              anime({
+                targets: timelineItems,
+                opacity: [0, 1],
+                translateX: [-30, 0],
+                duration: 800,
+                delay: anime.stagger(150),
+                easing: 'easeOutCubic',
+              });
+              
+              observer.unobserve(entry.target);
+            }
+          });
+        }, observerOptions);
+        
+        observer.observe(experienceSection);
+      }
+    } catch (error) {
+      console.error('Animation error:', error);
+      // Fallback: show elements
+      document.querySelectorAll('#experience .section-title, .timeline-item').forEach(el => {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
+    }
+  });
+</script>
