@@ -62,6 +62,32 @@ import { config } from '../data/config.js';
     transform: translateX(-30px);
   }
   
+  /* Fallback: Show about section if JavaScript fails */
+  #about:not(.js-loaded) .about-quote,
+  #about:not(.js-loaded) .about-image,
+  #about:not(.js-loaded) .about-text,
+  #about:not(.js-loaded) .about-image-label {
+    opacity: 1;
+    transform: none;
+  }
+  
+  /* Fallback animation after 2 seconds */
+  @media (prefers-reduced-motion: no-preference) {
+    #about:not(.js-loaded) .about-quote,
+    #about:not(.js-loaded) .about-image,
+    #about:not(.js-loaded) .about-text,
+    #about:not(.js-loaded) .about-image-label {
+      animation: fadeInFallback 0.1s ease-out 2s forwards;
+    }
+  }
+  
+  @keyframes fadeInFallback {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  
   .about-image img {
     width: 100%;
     height: auto;
@@ -132,11 +158,16 @@ import { config } from '../data/config.js';
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     try {
+      // Mark that JavaScript is loaded
+      const aboutSection = document.querySelector('#about');
+      if (aboutSection) {
+        aboutSection.classList.add('js-loaded');
+      }
+      
       const animeModule = await import('animejs');
       const anime = animeModule.default;
       
       // Animate about section
-      const aboutSection = document.querySelector('#about');
       if (aboutSection) {
         const observerOptions = {
           threshold: 0.2,

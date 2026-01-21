@@ -62,6 +62,28 @@ import { config } from '../data/config.js';
     transform: translateX(-30px);
   }
   
+  /* Fallback: Show experience if JavaScript fails */
+  #experience:not(.js-loaded) .section-title,
+  #experience:not(.js-loaded) .timeline-item {
+    opacity: 1;
+    transform: none;
+  }
+  
+  /* Fallback animation after 2 seconds */
+  @media (prefers-reduced-motion: no-preference) {
+    #experience:not(.js-loaded) .section-title,
+    #experience:not(.js-loaded) .timeline-item {
+      animation: fadeInLeftFallback 0.1s ease-out 2s forwards;
+    }
+  }
+  
+  @keyframes fadeInLeftFallback {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  
   .timeline-marker {
     position: absolute;
     left: -3rem;
@@ -131,11 +153,16 @@ import { config } from '../data/config.js';
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     try {
+      // Mark that JavaScript is loaded
+      const experienceSection = document.querySelector('#experience');
+      if (experienceSection) {
+        experienceSection.classList.add('js-loaded');
+      }
+      
       const animeModule = await import('animejs');
       const anime = animeModule.default;
       
       // Animate experience section
-      const experienceSection = document.querySelector('#experience');
       if (experienceSection) {
         const observerOptions = {
           threshold: 0.1,

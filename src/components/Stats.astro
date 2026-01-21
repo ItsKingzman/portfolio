@@ -34,6 +34,26 @@ import { config } from '../data/config.js';
     transform: translateY(30px) scale(0.9);
   }
   
+  /* Fallback: Show stats if JavaScript fails */
+  .stats:not(.js-loaded) .stat-card {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  
+  /* Fallback animation after 2 seconds */
+  @media (prefers-reduced-motion: no-preference) {
+    .stats:not(.js-loaded) .stat-card {
+      animation: fadeInUpFallback 0.1s ease-out 2s forwards;
+    }
+  }
+  
+  @keyframes fadeInUpFallback {
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  
   .stat-number {
     font-size: clamp(2.5rem, 5vw, 4rem);
     font-weight: 800;
@@ -58,11 +78,16 @@ import { config } from '../data/config.js';
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     try {
+      // Mark that JavaScript is loaded
+      const statsSection = document.querySelector('.stats');
+      if (statsSection) {
+        statsSection.classList.add('js-loaded');
+      }
+      
       const animeModule = await import('animejs');
       const anime = animeModule.default;
       
       // Animate stats section
-      const statsSection = document.querySelector('.stats');
       if (statsSection) {
         const observerOptions = {
           threshold: 0.2,
