@@ -155,7 +155,6 @@ import { config } from '../data/config.js';
         // Use requestAnimationFrame to ensure DOM is ready, then check viewport
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            // Check if already in viewport with more lenient check
             const rect = statsSection.getBoundingClientRect();
             const windowHeight = window.innerHeight || document.documentElement.clientHeight;
             if (rect.top < windowHeight + 200 && rect.bottom > -200) {

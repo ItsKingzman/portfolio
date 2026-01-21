@@ -1,6 +1,5 @@
 ﻿---
 import { config } from '../data/config.js';
-import '../styles/global.css';
 
 interface Props {
   title?: string;
@@ -28,6 +27,7 @@ const {
     <title>{title}</title>
     
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/src/styles/global.css">
   </head>
   <body>
     <slot />

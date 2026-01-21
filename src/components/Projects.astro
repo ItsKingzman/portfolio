@@ -102,10 +102,10 @@ import { config } from '../data/config.js';
     transform: translateY(0);
   }
   
-  /* Fallback after 3 seconds if JS hasn't loaded */
+  /* Fallback after 2 seconds if JS hasn't loaded */
   @media (prefers-reduced-motion: no-preference) {
     .projects-grid:not(.js-loaded) .project-card {
-      animation: fadeInFallback 0.1s ease-out 3s forwards;
+      animation: fadeInFallback 0.1s ease-out 2s forwards;
     }
   }
   
@@ -440,21 +440,14 @@ import { config } from '../data/config.js';
             }
           });
           
-          // Fallback: Mark js-loaded after 1.5 seconds if no cards animated
+          // Fallback: Mark js-loaded after 2 seconds if no cards animated
           setTimeout(() => {
             if (!hasAnimatedCard && projectsGrid) {
               projectsGrid.classList.add('js-loaded');
             }
-          }, 1500);
+          }, 2000);
         });
       });
-      
-      // Fallback: Mark js-loaded after 2 seconds if no cards animated
-      setTimeout(() => {
-        if (!hasAnimatedCard && projectsGrid) {
-          projectsGrid.classList.add('js-loaded');
-        }
-      }, 2000);
       
       // Add magnetic effect on hover
       projectCards.forEach((card) => {
