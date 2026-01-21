@@ -290,11 +290,8 @@ import { config } from '../data/config.js';
       const animeModule = await import('animejs');
       const anime = animeModule.default;
       
-      // Mark that JavaScript is loaded (after import succeeds)
+      // Mark that JavaScript is loaded (only after animations start)
       const projectsGrid = document.querySelector('.projects-grid');
-      if (projectsGrid) {
-        projectsGrid.classList.add('js-loaded');
-      }
       
       // Animate section title with IntersectionObserver
       const sectionTitle = document.querySelector('#projects .section-title');
@@ -340,6 +337,9 @@ import { config } from '../data/config.js';
         }, 2000);
       }
       
+      // Mark js-loaded after first card animation starts
+      let hasAnimatedCard = false;
+      
       // Intersection Observer for scroll animations
       const observerOptions = {
         threshold: 0.1,
@@ -351,6 +351,12 @@ import { config } from '../data/config.js';
           if (entry.isIntersecting) {
             const card = entry.target;
             const index = parseInt(card.getAttribute('data-index') || '0');
+            
+            // Mark js-loaded after first animation starts
+            if (!hasAnimatedCard && projectsGrid) {
+              hasAnimatedCard = true;
+              projectsGrid.classList.add('js-loaded');
+            }
             
             // Staggered entrance animation - smoother and more polished
             anime({
@@ -405,6 +411,13 @@ import { config } from '../data/config.js';
         const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
         if (isVisible) {
           observer.unobserve(card);
+          
+          // Mark js-loaded after first animation starts
+          if (!hasAnimatedCard && projectsGrid) {
+            hasAnimatedCard = true;
+            projectsGrid.classList.add('js-loaded');
+          }
+          
           const index = parseInt(card.getAttribute('data-index') || '0');
           anime({
             targets: card,
@@ -417,6 +430,13 @@ import { config } from '../data/config.js';
           });
         }
       });
+      
+      // Fallback: Mark js-loaded after 2 seconds if no cards animated
+      setTimeout(() => {
+        if (!hasAnimatedCard && projectsGrid) {
+          projectsGrid.classList.add('js-loaded');
+        }
+      }, 2000);
       
       // Add magnetic effect on hover
       projectCards.forEach((card) => {
