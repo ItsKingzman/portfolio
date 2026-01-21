@@ -286,34 +286,58 @@ import { config } from '../data/config.js';
   // Wait for DOM to be ready
   document.addEventListener('DOMContentLoaded', async () => {
     try {
-      // Mark that JavaScript is loaded
+      // Import anime.js
+      const animeModule = await import('animejs');
+      const anime = animeModule.default;
+      
+      // Mark that JavaScript is loaded (after import succeeds)
       const projectsGrid = document.querySelector('.projects-grid');
       if (projectsGrid) {
         projectsGrid.classList.add('js-loaded');
       }
       
-      // Import anime.js
-      const animeModule = await import('animejs');
-      const anime = animeModule.default;
-      
       // Animate section title with IntersectionObserver
       const sectionTitle = document.querySelector('#projects .section-title');
+      let titleAnimated = false;
+      
+      const animateTitle = () => {
+        if (titleAnimated || !sectionTitle) return;
+        titleAnimated = true;
+        anime({
+          targets: sectionTitle,
+          opacity: [0, 1],
+          translateY: [30, 0],
+          duration: 1000,
+          easing: 'easeOutExpo',
+        });
+      };
+      
       if (sectionTitle) {
         const titleObserver = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              anime({
-                targets: sectionTitle,
-                opacity: [0, 1],
-                translateY: [30, 0],
-                duration: 1000,
-                easing: 'easeOutExpo',
-              });
+              animateTitle();
               titleObserver.unobserve(sectionTitle);
             }
           });
         }, { threshold: 0.1 });
         titleObserver.observe(sectionTitle);
+        
+        // Use requestAnimationFrame to ensure DOM is ready
+        requestAnimationFrame(() => {
+          // Check if already visible
+          const rect = sectionTitle.getBoundingClientRect();
+          if (rect.top < window.innerHeight + 100 && rect.bottom > -100) {
+            animateTitle();
+          }
+        });
+        
+        // Fallback timeout
+        setTimeout(() => {
+          if (!titleAnimated) {
+            animateTitle();
+          }
+        }, 2000);
       }
       
       // Intersection Observer for scroll animations

@@ -171,67 +171,89 @@ import { config } from '../data/config.js';
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     try {
-      // Mark that JavaScript is loaded
-      const stackSection = document.querySelector('.stack');
-      if (stackSection) {
-        stackSection.classList.add('js-loaded');
-      }
-      
       const animeModule = await import('animejs');
       const anime = animeModule.default;
       
       // Animate section title
+      const stackSection = document.querySelector('.stack');
       if (stackSection) {
         const observerOptions = {
           threshold: 0.1,
           rootMargin: '0px 0px -50px 0px'
         };
         
+        let hasAnimated = false;
+        
+        const animateStack = () => {
+          if (hasAnimated) return;
+          hasAnimated = true;
+          
+          const sectionTitle = stackSection.querySelector('.section-title');
+          if (sectionTitle) {
+            anime({
+              targets: sectionTitle,
+              opacity: [0, 1],
+              translateY: [20, 0],
+              duration: 800,
+              easing: 'easeOutExpo',
+            });
+          }
+          
+          // Animate categories with stagger
+          const categories = stackSection.querySelectorAll('.stack-category');
+          categories.forEach((category, index) => {
+            anime({
+              targets: category,
+              opacity: [0, 1],
+              translateY: [30, 0],
+              duration: 800,
+              delay: index * 200,
+              easing: 'easeOutExpo',
+            });
+            
+            // Animate tech items within category
+            const techItems = category.querySelectorAll('.tech-item');
+            anime({
+              targets: techItems,
+              opacity: [0, 1],
+              translateY: [20, 0],
+              scale: [0.95, 1],
+              duration: 600,
+              delay: anime.stagger(50, {start: index * 200 + 300}),
+              easing: 'easeOutCubic',
+            });
+          });
+          
+          // Mark as loaded after animation starts
+          stackSection.classList.add('js-loaded');
+        };
+        
         const observer = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              const sectionTitle = entry.target.querySelector('.section-title');
-              if (sectionTitle) {
-                anime({
-                  targets: sectionTitle,
-                  opacity: [0, 1],
-                  translateY: [20, 0],
-                  duration: 800,
-                  easing: 'easeOutExpo',
-                });
-              }
-              
-              // Animate categories with stagger
-              const categories = entry.target.querySelectorAll('.stack-category');
-              categories.forEach((category, index) => {
-                anime({
-                  targets: category,
-                  opacity: [0, 1],
-                  translateY: [30, 0],
-                  duration: 800,
-                  delay: index * 200,
-                  easing: 'easeOutExpo',
-                });
-                
-                // Animate tech items within category
-                const techItems = category.querySelectorAll('.tech-item');
-                anime({
-                  targets: techItems,
-                  opacity: [0, 1],
-                  translateY: [20, 0],
-                  scale: [0.95, 1],
-                  duration: 600,
-                  delay: anime.stagger(50, {start: index * 200 + 300}),
-                  easing: 'easeOutCubic',
-                });
-              });
-              
+              animateStack();
               observer.unobserve(entry.target);
             }
           });
         }, observerOptions);
         
         observer.observe(stackSection);
+        
+        // Use requestAnimationFrame to ensure DOM is ready
+        requestAnimationFrame(() => {
+          // Check if already in viewport
+          const rect = stackSection.getBoundingClientRect();
+          if (rect.top < window.innerHeight + 100 && rect.bottom > -100) {
+            animateStack();
+          }
+        });
+        
+        // Fallback timeout - show after 2 seconds if not animated
+        setTimeout(() => {
+          if (!hasAnimated) {
+            animateStack();
+          }
+        }, 2000);
       }
     } catch (error) {
       console.error('Animation error:', error);
