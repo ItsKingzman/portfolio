@@ -152,21 +152,24 @@ import { config } from '../data/config.js';
         
         observer.observe(statsSection);
         
-        // Use requestAnimationFrame to ensure DOM is ready
+        // Use requestAnimationFrame to ensure DOM is ready, then check viewport
         requestAnimationFrame(() => {
-          // Check if already in viewport
-          const rect = statsSection.getBoundingClientRect();
-          if (rect.top < window.innerHeight + 100 && rect.bottom > -100) {
-            animateStats();
-          }
+          requestAnimationFrame(() => {
+            // Check if already in viewport with more lenient check
+            const rect = statsSection.getBoundingClientRect();
+            const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+            if (rect.top < windowHeight + 200 && rect.bottom > -200) {
+              animateStats();
+            }
+          });
         });
         
-        // Fallback timeout - show after 2 seconds if not animated
+        // Fallback timeout - show after 1.5 seconds if not animated
         setTimeout(() => {
           if (!hasAnimated) {
             animateStats();
           }
-        }, 2000);
+        }, 1500);
       }
     } catch (error) {
       console.error('Animation error:', error);

@@ -232,21 +232,24 @@ import { config } from '../data/config.js';
         
         observer.observe(aboutSection);
         
-        // Use requestAnimationFrame to ensure DOM is ready
+        // Use requestAnimationFrame to ensure DOM is ready, then check viewport
         requestAnimationFrame(() => {
-          // Check if already in viewport
-          const rect = aboutSection.getBoundingClientRect();
-          if (rect.top < window.innerHeight + 100 && rect.bottom > -100) {
-            animateAbout();
-          }
+          requestAnimationFrame(() => {
+            // Check if already in viewport with more lenient check
+            const rect = aboutSection.getBoundingClientRect();
+            const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+            if (rect.top < windowHeight + 200 && rect.bottom > -200) {
+              animateAbout();
+            }
+          });
         });
         
-        // Fallback timeout - show after 2 seconds if not animated
+        // Fallback timeout - show after 1.5 seconds if not animated
         setTimeout(() => {
           if (!hasAnimated) {
             animateAbout();
           }
-        }, 2000);
+        }, 1500);
       }
     } catch (error) {
       console.error('Animation error:', error);
