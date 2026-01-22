@@ -5,7 +5,7 @@
     tagline: "I am a creative Web Developer specializing in WordPress, performance optimization, and modern web development with 5+ years of experience building high-performance websites for SMB, SaaS, real estate, and professional-services clients.",
     email: "connerk4@gmail.com",
     location: "Calera, Alabama",
-    avatar: "/images/logos/headshot.jpg",
+    avatar: "/images/logos/headshot1.jpeg",
     
     bio: {
       intro: "Conner King",
@@ -50,6 +50,7 @@ My approach focuses on creating scalable, high-performing solutions tailored to 
       { name: "Figma", logo: "/images/logos/figma.svg" },
       { name: "GA4", logo: "/images/logos/ga4.svg" },
       { name: "GTM", logo: "/images/logos/gtm.svg" },
+      { name: "Semrush", logo: "/images/logos/semrush.svg" },
     ]
   },
 
