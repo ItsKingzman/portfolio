@@ -99,7 +99,7 @@ import { config } from '../data/config.js';
     margin-left: 280px;
     padding: var(--spacing-xl) 0;
     background: var(--color-bg-secondary);
-    overflow: hidden;
+    overflow: visible;
   }
   
   .section-title {
@@ -310,7 +310,9 @@ import { config } from '../data/config.js';
     position: absolute;
     top: 0;
     width: 600px;
+    max-width: calc(100vw - 400px);
     height: 400px;
+    max-height: calc(100vh - 100px);
     background: var(--color-bg);
     border-radius: var(--border-radius);
     border: 1px solid var(--color-border);
@@ -318,20 +320,21 @@ import { config } from '../data/config.js';
     opacity: 0;
     visibility: hidden;
     transform: scale(0.95);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
     pointer-events: none;
     overflow: hidden;
   }
   
-  /* Odd cards (left side) - preview on left */
+  /* Default positioning - will be adjusted by JavaScript */
   .project-card:nth-child(odd) .project-preview {
-    left: auto;
     right: calc(100% + 2rem);
+    left: auto;
     transform: translateX(20px) scale(0.95);
   }
   
-  /* Even cards (right side) - preview on right */
   .project-card:nth-child(even) .project-preview {
     left: calc(100% + 2rem);
     right: auto;
@@ -344,17 +347,6 @@ import { config } from '../data/config.js';
     visibility: visible;
     transform: translateX(0) scale(1);
     pointer-events: auto;
-  }
-  
-  /* Keep preview visible when hovering over it */
-  .project-card:nth-child(odd):hover .project-preview,
-  .project-card:nth-child(odd) .project-preview:hover {
-    transform: translateX(0) scale(1);
-  }
-  
-  .project-card:nth-child(even):hover .project-preview,
-  .project-card:nth-child(even) .project-preview:hover {
-    transform: translateX(0) scale(1);
   }
   
   .preview-header {
@@ -679,8 +671,79 @@ import { config } from '../data/config.js';
         });
       });
       
-      // Add magnetic effect on hover
-      projectCards.forEach((card) => {
+      // Add magnetic effect on hover and handle preview positioning
+      projectCards.forEach((card, index) => {
+        const preview = card.querySelector('.project-preview');
+        if (!preview) return;
+        
+        // Function to position preview to prevent overflow
+        const positionPreview = () => {
+          const cardRect = card.getBoundingClientRect();
+          const previewRect = preview.getBoundingClientRect();
+          const viewportWidth = window.innerWidth;
+          const viewportHeight = window.innerHeight;
+          const gap = 32; // 2rem gap
+          
+          // Reset positioning
+          preview.style.left = '';
+          preview.style.right = '';
+          preview.style.top = '';
+          
+          const isOdd = index % 2 === 0; // 0-indexed, so 0,2,4 are "odd" visually
+          
+          if (isOdd) {
+            // Left side card - try to show preview on left
+            preview.style.right = `calc(100% + ${gap}px)`;
+            preview.style.left = 'auto';
+            
+            // Check if preview overflows left edge
+            const previewLeft = cardRect.left - previewRect.width - gap;
+            if (previewLeft < 0) {
+              // Overflow left, show on right instead
+              preview.style.left = `calc(100% + ${gap}px)`;
+              preview.style.right = 'auto';
+            }
+          } else {
+            // Right side card - try to show preview on right
+            preview.style.left = `calc(100% + ${gap}px)`;
+            preview.style.right = 'auto';
+            
+            // Check if preview overflows right edge
+            const previewRight = cardRect.right + previewRect.width + gap;
+            if (previewRight > viewportWidth) {
+              // Overflow right, show on left instead
+              preview.style.right = `calc(100% + ${gap}px)`;
+              preview.style.left = 'auto';
+            }
+          }
+          
+          // Adjust vertical position if needed
+          const previewTop = cardRect.top;
+          const previewBottom = previewTop + previewRect.height;
+          
+          if (previewBottom > viewportHeight) {
+            // Preview would overflow bottom, adjust upward
+            const overflow = previewBottom - viewportHeight;
+            preview.style.top = `${-overflow - 20}px`; // Extra 20px padding
+          } else if (previewTop < 0) {
+            // Preview would overflow top, adjust downward
+            preview.style.top = `${Math.abs(previewTop) + 20}px`;
+          }
+        };
+        
+        // Position preview on hover
+        card.addEventListener('mouseenter', () => {
+          positionPreview();
+        });
+        
+        // Reposition on window resize
+        window.addEventListener('resize', () => {
+          if (preview.style.opacity === '1' || preview.style.visibility === 'visible') {
+            positionPreview();
+          }
+        });
+        
+        // Magnetic effect on card image
         card.addEventListener('mousemove', (e) => {
           const rect = card.getBoundingClientRect();
           const x = e.clientX - rect.left;
