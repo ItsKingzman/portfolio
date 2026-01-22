@@ -309,7 +309,6 @@ import { config } from '../data/config.js';
   .project-preview {
     position: absolute;
     top: 0;
-    left: calc(100% + 2rem);
     width: 600px;
     height: 400px;
     background: var(--color-bg);
@@ -318,18 +317,44 @@ import { config } from '../data/config.js';
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     opacity: 0;
     visibility: hidden;
-    transform: translateX(-20px) scale(0.95);
+    transform: scale(0.95);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
     pointer-events: none;
     overflow: hidden;
   }
   
-  .project-card:hover .project-preview {
+  /* Odd cards (left side) - preview on left */
+  .project-card:nth-child(odd) .project-preview {
+    left: auto;
+    right: calc(100% + 2rem);
+    transform: translateX(20px) scale(0.95);
+  }
+  
+  /* Even cards (right side) - preview on right */
+  .project-card:nth-child(even) .project-preview {
+    left: calc(100% + 2rem);
+    right: auto;
+    transform: translateX(-20px) scale(0.95);
+  }
+  
+  .project-card:hover .project-preview,
+  .project-preview:hover {
     opacity: 1;
     visibility: visible;
     transform: translateX(0) scale(1);
     pointer-events: auto;
+  }
+  
+  /* Keep preview visible when hovering over it */
+  .project-card:nth-child(odd):hover .project-preview,
+  .project-card:nth-child(odd) .project-preview:hover {
+    transform: translateX(0) scale(1);
+  }
+  
+  .project-card:nth-child(even):hover .project-preview,
+  .project-card:nth-child(even) .project-preview:hover {
+    transform: translateX(0) scale(1);
   }
   
   .preview-header {
@@ -411,10 +436,13 @@ import { config } from '../data/config.js';
     justify-content: center;
     opacity: 0;
     transition: opacity 0.3s ease;
+    pointer-events: none;
   }
   
-  .project-card:hover .preview-overlay {
+  .project-card:hover .preview-overlay,
+  .project-preview:hover .preview-overlay {
     opacity: 1;
+    pointer-events: auto;
   }
   
   .preview-link {
@@ -453,15 +481,6 @@ import { config } from '../data/config.js';
     color: var(--color-text-secondary);
   }
   
-  /* Position preview on the right side, or left if near right edge */
-  .project-card:nth-child(even) .project-preview {
-    left: auto;
-    right: calc(100% + 2rem);
-  }
-  
-  .project-card:nth-child(even):hover .project-preview {
-    transform: translateX(0) scale(1);
-  }
   
   @media (max-width: 1400px) {
     .project-preview {
