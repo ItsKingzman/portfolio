@@ -54,39 +54,10 @@ import { config } from '../data/config.js';
             </div>
           </div>
           
-          {project.link && (
-            <div class="project-preview">
-              <div class="preview-header">
-                <div class="preview-dots">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-                <span class="preview-url">{project.link.replace(/^https?:\/\//, '')}</span>
-              </div>
-              <div class="preview-content">
-                {(project.previewImage || project.image) ? (
-                  <div class="preview-image-fallback">
-                    <img src={project.previewImage || project.image} alt={project.title} />
-                    <div class="preview-overlay">
-                      <a href={project.link} target="_blank" rel="noopener" class="preview-link">
-                        Visit Site
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                          <path d="M3 8H13M13 8L8 3M13 8L8 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                ) : (
-                  <div class="preview-placeholder">
-                    <p>Preview unavailable</p>
-                    <a href={project.link} target="_blank" rel="noopener" class="preview-link">
-                      Visit Site
-                    </a>
-                  </div>
-                )}
-              </div>
-            </div>
+          {project.link && (project.previewImage || project.image) && (
+            <a href={project.link} target="_blank" rel="noopener" class="project-preview">
+              <img src={project.previewImage || project.image} alt={project.title} />
+            </a>
           )}
         </article>
       ))}
@@ -313,9 +284,7 @@ import { config } from '../data/config.js';
     max-width: calc(100vw - 400px);
     height: 400px;
     max-height: calc(100vh - 100px);
-    background: var(--color-bg);
     border-radius: var(--border-radius);
-    border: 1px solid var(--color-border);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     opacity: 0;
     visibility: hidden;
@@ -326,6 +295,16 @@ import { config } from '../data/config.js';
     z-index: 1000;
     pointer-events: none;
     overflow: hidden;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .project-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: top;
+    display: block;
   }
   
   /* Default positioning - will be adjusted by JavaScript */
@@ -347,130 +326,6 @@ import { config } from '../data/config.js';
     visibility: visible;
     transform: translateX(0) scale(1);
     pointer-events: auto;
-  }
-  
-  .preview-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    background: var(--color-bg-secondary);
-    border-bottom: 1px solid var(--color-border);
-  }
-  
-  .preview-dots {
-    display: flex;
-    gap: 0.375rem;
-  }
-  
-  .preview-dots span {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--color-text-secondary);
-  }
-  
-  .preview-dots span:nth-child(1) {
-    background: #ff5f57;
-  }
-  
-  .preview-dots span:nth-child(2) {
-    background: #ffbd2e;
-  }
-  
-  .preview-dots span:nth-child(3) {
-    background: #28ca42;
-  }
-  
-  .preview-url {
-    font-size: 0.75rem;
-    color: var(--color-text-secondary);
-    font-family: monospace;
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  
-  .preview-content {
-    width: 100%;
-    height: calc(100% - 48px);
-    overflow: hidden;
-    background: var(--color-bg-tertiary);
-    position: relative;
-  }
-  
-  .preview-image-fallback {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .preview-image-fallback img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: top;
-    transition: transform 0.4s ease;
-  }
-  
-  .project-card:hover .preview-image-fallback img {
-    transform: scale(1.05);
-  }
-  
-  .preview-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-  }
-  
-  .project-card:hover .preview-overlay,
-  .project-preview:hover .preview-overlay {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  
-  .preview-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: var(--color-accent);
-    color: white;
-    border-radius: 6px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s ease;
-  }
-  
-  .preview-link:hover {
-    background: var(--color-accent-hover);
-    transform: translateY(-2px);
-  }
-  
-  .preview-link svg {
-    transition: transform 0.3s ease;
-  }
-  
-  .preview-link:hover svg {
-    transform: translateX(4px);
-  }
-  
-  .preview-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    gap: 1rem;
-    color: var(--color-text-secondary);
   }
   
   
@@ -679,10 +534,16 @@ import { config } from '../data/config.js';
         // Function to position preview to prevent overflow
         const positionPreview = () => {
           const cardRect = card.getBoundingClientRect();
-          const previewRect = preview.getBoundingClientRect();
           const viewportWidth = window.innerWidth;
           const viewportHeight = window.innerHeight;
           const gap = 32; // 2rem gap
+          
+          // Get preview dimensions (use getBoundingClientRect after making it visible temporarily)
+          preview.style.visibility = 'visible';
+          preview.style.opacity = '0';
+          const previewRect = preview.getBoundingClientRect();
+          preview.style.visibility = '';
+          preview.style.opacity = '';
           
           // Reset positioning
           preview.style.left = '';
@@ -698,7 +559,7 @@ import { config } from '../data/config.js';
             
             // Check if preview overflows left edge
             const previewLeft = cardRect.left - previewRect.width - gap;
-            if (previewLeft < 0) {
+            if (previewLeft < 20) {
               // Overflow left, show on right instead
               preview.style.left = `calc(100% + ${gap}px)`;
               preview.style.right = 'auto';
@@ -710,7 +571,7 @@ import { config } from '../data/config.js';
             
             // Check if preview overflows right edge
             const previewRight = cardRect.right + previewRect.width + gap;
-            if (previewRight > viewportWidth) {
+            if (previewRight > viewportWidth - 20) {
               // Overflow right, show on left instead
               preview.style.right = `calc(100% + ${gap}px)`;
               preview.style.left = 'auto';
@@ -721,18 +582,23 @@ import { config } from '../data/config.js';
           const previewTop = cardRect.top;
           const previewBottom = previewTop + previewRect.height;
           
-          if (previewBottom > viewportHeight) {
+          if (previewBottom > viewportHeight - 20) {
             // Preview would overflow bottom, adjust upward
-            const overflow = previewBottom - viewportHeight;
-            preview.style.top = `${-overflow - 20}px`; // Extra 20px padding
-          } else if (previewTop < 0) {
+            const overflow = previewBottom - viewportHeight + 20;
+            preview.style.top = `${-overflow}px`;
+          } else if (previewTop < 20) {
             // Preview would overflow top, adjust downward
-            preview.style.top = `${Math.abs(previewTop) + 20}px`;
+            preview.style.top = `${20 - previewTop}px`;
           }
         };
         
         // Position preview on hover
         card.addEventListener('mouseenter', () => {
+          positionPreview();
+        });
+        
+        // Keep preview visible when hovering over it
+        preview.addEventListener('mouseenter', () => {
           positionPreview();
         });
         
