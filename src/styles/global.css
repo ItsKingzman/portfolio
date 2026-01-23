@@ -1,4 +1,8 @@
-﻿/* Modern CSS Reset */
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Modern CSS Reset */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;

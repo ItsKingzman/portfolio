@@ -2,51 +2,70 @@
 import { config } from '../data/config.js';
 ---
 
-<section class="projects section" id="projects">
-  <div class="container">
-    <h2 class="section-title">Projects</h2>
+<section id="projects" class="ml-[280px] py-24 bg-[#1a1a1a] overflow-visible">
+  <div class="max-w-[1200px] mx-auto px-8">
+    <h2 class="section-title text-center mb-16 text-[clamp(2rem,4vw,3rem)] uppercase tracking-wider opacity-0 translate-y-5">
+      Projects
+    </h2>
     
-    <div class="projects-grid">
+    <div class="projects-grid grid grid-cols-2 gap-10 max-w-[900px] mx-auto">
       {config.projects.map((project, index) => (
-        <article class="project-card" data-index={index} data-project-link={project.link || ''}>
-          <div class="project-image">
+        <article 
+          class="project-card group relative bg-[#0a0a0a] rounded-lg overflow-visible border border-[#333] transition-all duration-400 ease-[cubic-bezier(0.4,0,0.2,1)] opacity-0 translate-y-[60px]"
+          data-index={index}
+        >
+          <div class="project-image relative w-full h-[250px] overflow-visible bg-[#2a2a2a] p-5">
             {project.image && (
-              <img src={project.image} alt={project.title} loading="lazy" />
+              <img 
+                src={project.image} 
+                alt={project.title} 
+                loading="lazy"
+                class="w-full h-full object-contain transition-transform duration-600 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-110"
+              />
             )}
-            <div class="project-overlay"></div>
+            <div class="project-overlay absolute inset-0 bg-gradient-to-b from-transparent to-[rgba(10,10,10,0.8)] opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100"></div>
           </div>
           
-          <div class="project-content">
+          <div class="project-content p-8">
             {project.link ? (
-              <a href={project.link} target="_blank" rel="noopener">
-                <h3 class="project-title">{project.title}</h3>
+              <a href={project.link} target="_blank" rel="noopener" class="no-underline inline-block">
+                <h3 class="project-title text-2xl mb-3 text-[#e0e0e0] relative inline-block cursor-pointer transition-colors duration-300 group-hover:text-[#3b82f6]">
+                  {project.title}
+                  <span class="absolute bottom-[-4px] left-0 w-0 h-0.5 bg-[#3b82f6] transition-all duration-300 group-hover:w-full"></span>
+                </h3>
               </a>
             ) : (
-              <h3 class="project-title">{project.title}</h3>
+              <h3 class="project-title text-2xl mb-3 text-[#e0e0e0] relative inline-block cursor-pointer transition-colors duration-300">
+                {project.title}
+              </h3>
             )}
-            <p class="project-description">{project.description}</p>
+            <p class="project-description text-base text-[#a0a0a0] leading-relaxed mb-6">
+              {project.description}
+            </p>
             
             {project.tags && project.tags.length > 0 && (
-              <div class="project-tags">
+              <div class="project-tags flex flex-wrap gap-2 mb-6">
                 {project.tags.map(tag => (
-                  <span class="project-tag">{tag}</span>
+                  <span class="project-tag text-xs px-3 py-1.5 bg-[#2a2a2a] text-[#a0a0a0] rounded font-medium transition-all duration-300 group-hover:bg-[#3b82f6] group-hover:text-white group-hover:-translate-y-0.5">
+                    {tag}
+                  </span>
                 ))}
               </div>
             )}
             
-            <div class="project-links">
+            <div class="project-links flex gap-4">
               {project.link && (
-                <a href={project.link} target="_blank" rel="noopener" class="project-link">
+                <a href={project.link} target="_blank" rel="noopener" class="project-link flex items-center gap-2 text-sm text-[#3b82f6] font-semibold transition-all duration-300 hover:text-[#2563eb]">
                   <span>View Site</span>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="transition-transform duration-300 hover:translate-x-1">
                     <path d="M3 8H13M13 8L8 3M13 8L8 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
               )}
               {project.github && (
-                <a href={project.github} target="_blank" rel="noopener" class="project-link">
+                <a href={project.github} target="_blank" rel="noopener" class="project-link flex items-center gap-2 text-sm text-[#3b82f6] font-semibold transition-all duration-300 hover:text-[#2563eb]">
                   <span>GitHub</span>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="transition-transform duration-300 hover:translate-x-1">
                     <path d="M3 8H13M13 8L8 3M13 8L8 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
@@ -55,8 +74,18 @@ import { config } from '../data/config.js';
           </div>
           
           {project.link && (project.previewImage || project.image) && (
-            <a href={project.link} target="_blank" rel="noopener" class="project-preview">
-              <img src={project.previewImage || project.image} alt={project.title} />
+            <a 
+              href={project.link} 
+              target="_blank" 
+              rel="noopener" 
+              class="project-preview absolute top-0 w-[600px] max-w-[calc(100vw-400px)] h-[400px] max-h-[calc(100vh-100px)] rounded-lg shadow-[0_20px_60px_rgba(0,0,0,0.4)] opacity-0 invisible scale-95 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-[1000] pointer-events-none overflow-hidden no-underline block"
+              data-preview-index={index}
+            >
+              <img 
+                src={project.previewImage || project.image} 
+                alt={project.title}
+                class="w-full h-full object-contain object-top block"
+              />
             </a>
           )}
         </article>
@@ -66,42 +95,6 @@ import { config } from '../data/config.js';
 </section>
 
 <style>
-  .projects {
-    margin-left: 280px;
-    padding: var(--spacing-xl) 0;
-    background: var(--color-bg-secondary);
-    overflow: visible;
-  }
-  
-  .section-title {
-    text-align: center;
-    margin-bottom: 4rem;
-    font-size: clamp(2rem, 4vw, 3rem);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2.5rem;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-  
-  .project-card {
-    background: var(--color-bg);
-    border-radius: var(--border-radius);
-    overflow: visible;
-    border: 1px solid var(--color-border);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0;
-    transform: translateY(60px);
-    position: relative;
-  }
-  
   /* Fallback: Show projects if JavaScript fails or is disabled */
   .projects-grid:not(.js-loaded) .project-card {
     opacity: 1;
@@ -122,6 +115,7 @@ import { config } from '../data/config.js';
     }
   }
   
+  /* Card hover effects */
   .project-card::before {
     content: '';
     position: absolute;
@@ -129,9 +123,9 @@ import { config } from '../data/config.js';
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: var(--border-radius);
+    border-radius: 8px;
     padding: 2px;
-    background: linear-gradient(135deg, var(--color-accent), transparent);
+    background: linear-gradient(135deg, #3b82f6, transparent);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -148,186 +142,35 @@ import { config } from '../data/config.js';
     box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
   }
   
-.project-image {
-  position: relative;
-  width: 100%;
-  height: 250px;
-  overflow: visible; /* Changed from hidden */
-  background: var(--color-bg-tertiary);
-  padding: 20px; /* Add padding */
-}
-
-.project-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* Changed from cover */
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-  
-  .project-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent 0%, rgba(10, 10, 10, 0.8) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  
-  .project-card:hover .project-overlay {
-    opacity: 1;
-  }
-  
-  .project-card:hover .project-image img {
-    transform: scale(1.1);
-  }
-  
-  .project-content {
-    padding: 2rem;
-  }
-  
-  .project-title {
-    font-size: 1.5rem;
-    margin-bottom: 0.75rem;
-    color: var(--color-text);
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-    transition: color 0.3s ease;
-  }
-
-  /* Make the parent link inherit styles */
-  .project-content > a {
-    text-decoration: none;
-    display: inline-block;
-  }
-
-  .project-content > a:hover .project-title {
-    color: var(--color-accent);
-  }
-
-  .project-title::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--color-accent);
-    transition: width 0.3s ease;
-  }
-
-  .project-content > a:hover .project-title::after {
-    width: 100%;
-  }
-  
-  .project-description {
-    font-size: 1rem;
-    color: var(--color-text-secondary);
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-  }
-  
-  .project-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .project-tag {
-    font-size: 0.75rem;
-    padding: 0.4rem 0.8rem;
-    background: var(--color-bg-tertiary);
-    color: var(--color-text-secondary);
-    border-radius: 4px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-  }
-  
-  .project-card:hover .project-tag {
-    background: var(--color-accent);
-    color: white;
-    transform: translateY(-2px);
-  }
-  
-  .project-links {
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .project-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    color: var(--color-accent);
-    font-weight: 600;
-    transition: all 0.3s ease;
-  }
-  
-  .project-link svg {
-    transition: transform 0.3s ease;
-  }
-  
-  .project-link:hover {
-    color: var(--color-accent-hover);
-  }
-  
-  .project-link:hover svg {
-    transform: translateX(4px);
-  }
-  
-  /* Project Preview on Hover */
-  .project-preview {
-    position: absolute;
-    top: 0;
-    width: 600px;
-    max-width: calc(100vw - 400px);
-    height: 400px;
-    max-height: calc(100vh - 100px);
-    border-radius: var(--border-radius);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    visibility: hidden;
-    transform: scale(0.95);
-    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1000;
-    pointer-events: none;
-    overflow: hidden;
-    text-decoration: none;
-    display: block;
-  }
-  
-  .project-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: top;
-    display: block;
-  }
-  
-  /* Default positioning - will be adjusted by JavaScript */
+  /* Preview positioning - odd cards show preview on left */
   .project-card:nth-child(odd) .project-preview {
     right: calc(100% + 2rem);
     left: auto;
     transform: translateX(20px) scale(0.95);
   }
   
+  /* Preview positioning - even cards show preview on right */
   .project-card:nth-child(even) .project-preview {
     left: calc(100% + 2rem);
     right: auto;
     transform: translateX(-20px) scale(0.95);
   }
   
-  .project-card:hover .project-preview,
-  .project-preview:hover {
+  /* Show preview on card hover */
+  .project-card:hover .project-preview {
     opacity: 1;
     visibility: visible;
     transform: translateX(0) scale(1);
     pointer-events: auto;
   }
   
+  /* Keep preview visible when hovering over it */
+  .project-preview:hover {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateX(0) scale(1) !important;
+    pointer-events: auto !important;
+  }
   
   @media (max-width: 1400px) {
     .project-preview {
@@ -344,7 +187,7 @@ import { config } from '../data/config.js';
   }
   
   @media (max-width: 968px) {
-    .projects {
+    #projects {
       margin-left: 0;
     }
     
@@ -354,23 +197,20 @@ import { config } from '../data/config.js';
     }
     
     .project-preview {
-      display: none; /* Hide preview on mobile */
+      display: none;
     }
   }
 </style>
 
 <script>
-  // Wait for DOM to be ready
   document.addEventListener('DOMContentLoaded', async () => {
     try {
-      // Import anime.js
       const animeModule = await import('animejs');
       const anime = animeModule.default;
       
-      // Mark that JavaScript is loaded (only after animations start)
       const projectsGrid = document.querySelector('.projects-grid');
       
-      // Animate section title with IntersectionObserver
+      // Animate section title
       const sectionTitle = document.querySelector('#projects .section-title');
       let titleAnimated = false;
       
@@ -397,10 +237,8 @@ import { config } from '../data/config.js';
         }, { threshold: 0.1 });
         titleObserver.observe(sectionTitle);
         
-        // Use requestAnimationFrame to ensure DOM is ready, then check viewport
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            // Check if already visible with more lenient check
             const rect = sectionTitle.getBoundingClientRect();
             const windowHeight = window.innerHeight || document.documentElement.clientHeight;
             if (rect.top < windowHeight + 200 && rect.bottom > -200) {
@@ -409,7 +247,6 @@ import { config } from '../data/config.js';
           });
         });
         
-        // Fallback timeout
         setTimeout(() => {
           if (!titleAnimated) {
             animateTitle();
@@ -417,10 +254,9 @@ import { config } from '../data/config.js';
         }, 1500);
       }
       
-      // Mark js-loaded after first card animation starts
+      // Animate project cards
       let hasAnimatedCard = false;
       
-      // Intersection Observer for scroll animations
       const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -100px 0px'
@@ -432,13 +268,11 @@ import { config } from '../data/config.js';
             const card = entry.target;
             const index = parseInt(card.getAttribute('data-index') || '0');
             
-            // Mark js-loaded after first animation starts
             if (!hasAnimatedCard && projectsGrid) {
               hasAnimatedCard = true;
               projectsGrid.classList.add('js-loaded');
             }
             
-            // Staggered entrance animation - smoother and more polished
             anime({
               targets: card,
               opacity: [0, 1],
@@ -449,7 +283,6 @@ import { config } from '../data/config.js';
               easing: 'easeOutCubic',
             });
             
-            // Animate tags with bounce effect
             const tags = card.querySelectorAll('.project-tag');
             if (tags.length > 0) {
               anime({
@@ -463,7 +296,6 @@ import { config } from '../data/config.js';
               });
             }
             
-            // Animate links
             const links = card.querySelectorAll('.project-link');
             if (links.length > 0) {
               anime({
@@ -481,16 +313,13 @@ import { config } from '../data/config.js';
         });
       }, observerOptions);
       
-      // Observe all project cards
       const projectCards = document.querySelectorAll('.project-card');
       
-      // Use double requestAnimationFrame for better timing
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           projectCards.forEach((card) => {
             observer.observe(card);
             
-            // If card is already in viewport, trigger animation immediately
             const rect = card.getBoundingClientRect();
             const windowHeight = window.innerHeight || document.documentElement.clientHeight;
             const isVisible = rect.top < windowHeight + 200 && rect.bottom > -200;
@@ -498,7 +327,6 @@ import { config } from '../data/config.js';
             if (isVisible) {
               observer.unobserve(card);
               
-              // Mark js-loaded after first animation starts
               if (!hasAnimatedCard && projectsGrid) {
                 hasAnimatedCard = true;
                 projectsGrid.classList.add('js-loaded');
@@ -517,7 +345,6 @@ import { config } from '../data/config.js';
             }
           });
           
-          // Fallback: Mark js-loaded after 2 seconds if no cards animated
           setTimeout(() => {
             if (!hasAnimatedCard && projectsGrid) {
               projectsGrid.classList.add('js-loaded');
@@ -526,98 +353,113 @@ import { config } from '../data/config.js';
         });
       });
       
-      // Add magnetic effect on hover and handle preview positioning
+      // Preview positioning and hover handling
       projectCards.forEach((card, index) => {
         const preview = card.querySelector('.project-preview');
         if (!preview) return;
         
-        // Function to position preview to prevent overflow
+        let hideTimeout;
+        let isHoveringPreview = false;
+        
+        const showPreview = () => {
+          clearTimeout(hideTimeout);
+          isHoveringPreview = true;
+          positionPreview();
+          preview.style.opacity = '1';
+          preview.style.visibility = 'visible';
+          preview.style.pointerEvents = 'auto';
+          preview.style.transform = 'translateX(0) scale(1)';
+        };
+        
+        const hidePreview = () => {
+          clearTimeout(hideTimeout);
+          hideTimeout = setTimeout(() => {
+            if (!isHoveringPreview) {
+              preview.style.opacity = '0';
+              preview.style.visibility = 'hidden';
+              preview.style.pointerEvents = 'none';
+            }
+          }, 100);
+        };
+        
         const positionPreview = () => {
           const cardRect = card.getBoundingClientRect();
           const viewportWidth = window.innerWidth;
           const viewportHeight = window.innerHeight;
-          const gap = 32; // 2rem gap
+          const gap = 32;
           
-          // Get preview dimensions (use getBoundingClientRect after making it visible temporarily)
+          // Temporarily make visible to measure
           preview.style.visibility = 'visible';
           preview.style.opacity = '0';
           const previewRect = preview.getBoundingClientRect();
           preview.style.visibility = '';
           preview.style.opacity = '';
           
-          // Reset positioning
           preview.style.left = '';
           preview.style.right = '';
           preview.style.top = '';
           
-          const isOdd = index % 2 === 0; // 0-indexed, so 0,2,4 are "odd" visually
+          const isOdd = index % 2 === 0;
           
           if (isOdd) {
-            // Left side card - try to show preview on left
             preview.style.right = `calc(100% + ${gap}px)`;
             preview.style.left = 'auto';
-            
-            // Check if preview overflows left edge
             const previewLeft = cardRect.left - previewRect.width - gap;
             if (previewLeft < 20) {
-              // Overflow left, show on right instead
               preview.style.left = `calc(100% + ${gap}px)`;
               preview.style.right = 'auto';
             }
           } else {
-            // Right side card - try to show preview on right
             preview.style.left = `calc(100% + ${gap}px)`;
             preview.style.right = 'auto';
-            
-            // Check if preview overflows right edge
             const previewRight = cardRect.right + previewRect.width + gap;
             if (previewRight > viewportWidth - 20) {
-              // Overflow right, show on left instead
               preview.style.right = `calc(100% + ${gap}px)`;
               preview.style.left = 'auto';
             }
           }
           
-          // Adjust vertical position if needed
           const previewTop = cardRect.top;
           const previewBottom = previewTop + previewRect.height;
           
           if (previewBottom > viewportHeight - 20) {
-            // Preview would overflow bottom, adjust upward
             const overflow = previewBottom - viewportHeight + 20;
             preview.style.top = `${-overflow}px`;
           } else if (previewTop < 20) {
-            // Preview would overflow top, adjust downward
             preview.style.top = `${20 - previewTop}px`;
           }
         };
         
-        // Position preview on hover
-        card.addEventListener('mouseenter', () => {
-          positionPreview();
+        card.addEventListener('mouseenter', showPreview);
+        card.addEventListener('mouseleave', () => {
+          isHoveringPreview = false;
+          hidePreview();
         });
         
-        // Keep preview visible when hovering over it
         preview.addEventListener('mouseenter', () => {
-          positionPreview();
+          isHoveringPreview = true;
+          clearTimeout(hideTimeout);
+          showPreview();
         });
         
-        // Reposition on window resize
+        preview.addEventListener('mouseleave', () => {
+          isHoveringPreview = false;
+          hidePreview();
+        });
+        
         window.addEventListener('resize', () => {
-          if (preview.style.opacity === '1' || preview.style.visibility === 'visible') {
+          if (preview.style.opacity === '1') {
             positionPreview();
           }
         });
         
-        // Magnetic effect on card image
+        // Magnetic effect
         card.addEventListener('mousemove', (e) => {
           const rect = card.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
-          
           const centerX = rect.width / 2;
           const centerY = rect.height / 2;
-          
           const deltaX = (x - centerX) / centerX;
           const deltaY = (y - centerY) / centerY;
           
@@ -647,7 +489,6 @@ import { config } from '../data/config.js';
         });
       });
     } catch (error) {
-      // If animation fails, show projects anyway
       console.error('Animation error:', error);
       const projectCards = document.querySelectorAll('.project-card');
       projectCards.forEach((card) => {
