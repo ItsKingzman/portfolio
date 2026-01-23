@@ -4,10 +4,6 @@ import { config } from '../data/config.js';
 
 <section class="about section" id="about">
   <div class="container">
-    <div class="about-quote">
-      <h2>I believe in a user centered design approach, ensuring that every project I work on is tailored to meet the specific needs of its users.</h2>
-    </div>
-    
     <div class="about-content">
       <div class="about-image">
         {config.personal.avatar && (
@@ -34,21 +30,6 @@ import { config } from '../data/config.js';
     padding: var(--spacing-xl) 0;
   }
   
-  .about-quote {
-    max-width: 900px;
-    margin: 0 auto 6rem;
-    text-align: center;
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  
-  .about-quote h2 {
-    font-size: clamp(1.5rem, 3vw, 2.25rem);
-    line-height: 1.5;
-    color: var(--color-text);
-    font-weight: 400;
-  }
-  
   .about-content {
     display: grid;
     grid-template-columns: 350px 1fr;
@@ -63,7 +44,6 @@ import { config } from '../data/config.js';
   }
   
   /* Fallback: Show about section if JavaScript fails */
-  #about:not(.js-loaded) .about-quote,
   #about:not(.js-loaded) .about-image,
   #about:not(.js-loaded) .about-text,
   #about:not(.js-loaded) .about-image-label {
@@ -73,7 +53,6 @@ import { config } from '../data/config.js';
   
   /* Fallback animation after 2 seconds */
   @media (prefers-reduced-motion: no-preference) {
-    #about:not(.js-loaded) .about-quote,
     #about:not(.js-loaded) .about-image,
     #about:not(.js-loaded) .about-text,
     #about:not(.js-loaded) .about-image-label {
@@ -148,9 +127,99 @@ import { config } from '../data/config.js';
       max-width: 300px;
       margin: 0 auto;
     }
-    
-    .about-quote {
-      margin-bottom: 3rem;
-    }
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const animeModule = await import('animejs');
+      const anime = animeModule.default;
+      
+      // Animate about section
+      const aboutSection = document.querySelector('#about');
+      if (aboutSection) {
+        let hasAnimated = false;
+        
+        const animateAbout = () => {
+          if (hasAnimated) return;
+          hasAnimated = true;
+          
+          const image = aboutSection.querySelector('.about-image');
+          const text = aboutSection.querySelector('.about-text');
+          const label = aboutSection.querySelector('.about-image-label');
+          
+          // Animate image and text simultaneously
+          if (image && text) {
+            anime({
+              targets: [image, text],
+              opacity: [0, 1],
+              translateX: [
+                {value: -30, duration: 0},
+                {value: 0, duration: 1000}
+              ],
+              delay: anime.stagger(100, {start: 0}),
+              easing: 'easeOutCubic',
+            });
+          }
+          
+          // Animate label with bounce
+          if (label) {
+            anime({
+              targets: label,
+              opacity: [0, 1],
+              scale: [0.8, 1],
+              duration: 600,
+              delay: 800,
+              easing: 'easeOutElastic(1, .8)',
+            });
+          }
+          
+          // Mark as loaded after animation starts
+          aboutSection.classList.add('js-loaded');
+        };
+        
+        const observerOptions = {
+          threshold: 0.1,
+          rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              animateAbout();
+              observer.unobserve(entry.target);
+            }
+          });
+        }, observerOptions);
+        
+        observer.observe(aboutSection);
+        
+        // Use double requestAnimationFrame to ensure DOM is ready, then check viewport
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            // Check if already in viewport with more lenient check
+            const rect = aboutSection.getBoundingClientRect();
+            const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+            if (rect.top < windowHeight + 200 && rect.bottom > -200) {
+              animateAbout();
+            }
+          });
+        });
+        
+        // Fallback timeout - show after 1.5 seconds if not animated
+        setTimeout(() => {
+          if (!hasAnimated) {
+            animateAbout();
+          }
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('Animation error:', error);
+      document.querySelectorAll('#about .about-image, .about-text, .about-image-label').forEach(el => {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
+    }
+  });
+</script>

@@ -1,0 +1,137 @@
+---
+---
+
+<section class="quote section" id="quote">
+  <div class="container">
+    <div class="about-quote">
+      <h2>I believe in a user centered design approach, ensuring that every project I work on is tailored to meet the specific needs of its users.</h2>
+    </div>
+  </div>
+</section>
+
+<style>
+  .quote {
+    margin-left: 280px;
+    padding: var(--spacing-xl) 0;
+  }
+  
+  .about-quote {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  
+  /* Fallback: Show quote if JavaScript fails */
+  #quote:not(.js-loaded) .about-quote {
+    opacity: 1;
+    transform: none;
+  }
+  
+  /* Fallback animation after 2 seconds */
+  @media (prefers-reduced-motion: no-preference) {
+    #quote:not(.js-loaded) .about-quote {
+      animation: fadeInFallback 0.1s ease-out 2s forwards;
+    }
+  }
+  
+  @keyframes fadeInFallback {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  
+  .about-quote h2 {
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    line-height: 1.5;
+    color: var(--color-text);
+    font-weight: 400;
+  }
+  
+  @media (max-width: 968px) {
+    .quote {
+      margin-left: 0;
+    }
+    
+    .about-quote {
+      margin-bottom: 0;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const animeModule = await import('animejs');
+      const anime = animeModule.default;
+      
+      // Animate quote section
+      const quoteSection = document.querySelector('#quote');
+      if (quoteSection) {
+        let hasAnimated = false;
+        
+        const animateQuote = () => {
+          if (hasAnimated) return;
+          hasAnimated = true;
+          
+          const quote = quoteSection.querySelector('.about-quote');
+          if (quote) {
+            anime({
+              targets: quote,
+              opacity: [0, 1],
+              translateY: [30, 0],
+              duration: 1000,
+              easing: 'easeOutExpo',
+            });
+          }
+          
+          // Mark as loaded after animation starts
+          quoteSection.classList.add('js-loaded');
+        };
+        
+        const observerOptions = {
+          threshold: 0.1,
+          rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              animateQuote();
+              observer.unobserve(entry.target);
+            }
+          });
+        }, observerOptions);
+        
+        observer.observe(quoteSection);
+        
+        // Use double requestAnimationFrame to ensure DOM is ready, then check viewport
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            // Check if already in viewport with more lenient check
+            const rect = quoteSection.getBoundingClientRect();
+            const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+            if (rect.top < windowHeight + 200 && rect.bottom > -200) {
+              animateQuote();
+            }
+          });
+        });
+        
+        // Fallback timeout - show after 1.5 seconds if not animated
+        setTimeout(() => {
+          if (!hasAnimated) {
+            animateQuote();
+          }
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('Animation error:', error);
+      document.querySelectorAll('#quote .about-quote').forEach(el => {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
+    }
+  });
+</script>
