@@ -120,6 +120,9 @@ import { config } from '../data/config.js';
           if (hasAnimated) return;
           hasAnimated = true;
           
+          // Mark as loaded FIRST to remove CSS fallback
+          stackSection.classList.add('js-loaded');
+          
           const sectionTitle = stackSection.querySelector('.section-title');
           if (sectionTitle) {
             gsap.from(sectionTitle, {
@@ -153,9 +156,6 @@ import { config } from '../data/config.js';
               ease: "power2.out"
             });
           });
-          
-          // Mark as loaded
-          stackSection.classList.add('js-loaded');
         };
         
         const observerOptions = {

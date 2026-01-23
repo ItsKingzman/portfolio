@@ -209,6 +209,11 @@ import { config } from '../data/config.js';
       
       const projectsGrid = document.querySelector('.projects-grid');
       
+      // Mark as loaded FIRST to remove CSS fallback
+      if (projectsGrid) {
+        projectsGrid.classList.add('js-loaded');
+      }
+      
       // Animate section title
       const sectionTitle = document.querySelector('#projects .section-title');
       let titleAnimated = false;
@@ -253,8 +258,6 @@ import { config } from '../data/config.js';
       }
       
       // Animate project cards
-      let hasAnimatedCard = false;
-      
       const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -100px 0px'
@@ -266,12 +269,7 @@ import { config } from '../data/config.js';
             const card = entry.target;
             const index = parseInt(card.getAttribute('data-index') || '0');
             
-            if (!hasAnimatedCard && projectsGrid) {
-              hasAnimatedCard = true;
-              projectsGrid.classList.add('js-loaded');
-            }
-            
-            // Animate card with GSAP
+            // Animate card with GSAP immediately
             gsap.from(card, {
               opacity: 0,
               y: 60,
@@ -327,12 +325,8 @@ import { config } from '../data/config.js';
             if (isVisible) {
               observer.unobserve(card);
               
-              if (!hasAnimatedCard && projectsGrid) {
-                hasAnimatedCard = true;
-                projectsGrid.classList.add('js-loaded');
-              }
-              
               const index = parseInt(card.getAttribute('data-index') || '0');
+              // Animate immediately
               gsap.from(card, {
                 opacity: 0,
                 y: 60,
@@ -343,12 +337,6 @@ import { config } from '../data/config.js';
               });
             }
           });
-          
-          setTimeout(() => {
-            if (!hasAnimatedCard && projectsGrid) {
-              projectsGrid.classList.add('js-loaded');
-            }
-          }, 2000);
         });
       });
       

@@ -92,6 +92,9 @@ import { config } from '../data/config.js';
           if (hasAnimated) return;
           hasAnimated = true;
           
+          // Mark as loaded FIRST to remove CSS fallback
+          experienceSection.classList.add('js-loaded');
+          
           const sectionTitle = experienceSection.querySelector('.section-title');
           if (sectionTitle) {
             gsap.from(sectionTitle, {
@@ -111,9 +114,6 @@ import { config } from '../data/config.js';
             stagger: 0.15,
             ease: "power2.out"
           });
-          
-          // Mark as loaded
-          experienceSection.classList.add('js-loaded');
         };
         
         const observer = new IntersectionObserver((entries) => {

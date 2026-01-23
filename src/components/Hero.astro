@@ -62,12 +62,18 @@ import { config } from '../data/config.js';
       const heroCta = document.querySelector('.hero-cta');
       
       if (heroTitle) {
+        // Mark as loaded FIRST to remove CSS fallback
+        const heroSection = document.querySelector('.hero');
+        if (heroSection) {
+          heroSection.classList.add('js-loaded');
+        }
+        
         // Split title into letters
         heroTitle.innerHTML = heroTitle.textContent?.replace(/\S/g, "<span class='letter'>$&</span>") || '';
         
         const letters = heroTitle.querySelectorAll('.letter');
         
-        // Create GSAP timeline
+        // Create GSAP timeline and start immediately
         const tl = gsap.timeline();
         
         // Animate letters
@@ -94,9 +100,6 @@ import { config } from '../data/config.js';
           duration: 0.6,
           ease: "expo.out"
         }, "-=0.6");
-        
-        // Mark as loaded
-        document.querySelector('.hero')?.classList.add('js-loaded');
       }
     } catch (error) {
       console.error('Animation error:', error);

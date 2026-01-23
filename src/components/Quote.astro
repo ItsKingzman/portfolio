@@ -52,6 +52,9 @@
           if (hasAnimated) return;
           hasAnimated = true;
           
+          // Mark as loaded FIRST to remove CSS fallback
+          quoteSection.classList.add('js-loaded');
+          
           const quote = quoteSection.querySelector('.about-quote');
           if (quote) {
             gsap.from(quote, {
@@ -61,9 +64,6 @@
               ease: "expo.out"
             });
           }
-          
-          // Mark as loaded
-          quoteSection.classList.add('js-loaded');
         };
         
         const observerOptions = {
