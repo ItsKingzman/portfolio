@@ -1,34 +1,110 @@
-﻿<script>
-  const anime = (await import('animejs')).default;
-  
-  // Animate hero title with letter-by-letter effect
-  const heroTitle = document.querySelector('.hero-title');
-  if (heroTitle) {
-    heroTitle.innerHTML = heroTitle.textContent?.replace(/\S/g, "<span class='letter'>$&</span>") || '';
-    
-    anime.timeline()
-      .add({
-        targets: '.hero-title .letter',
-        scale: [0, 1],
-        opacity: [0, 1],
-        translateZ: 0,
-        duration: 800,
-        delay: (el, i) => 70 * i,
-        easing: 'easeOutExpo',
-      })
-      .add({
-        targets: '.hero-tagline',
-        opacity: [0, 1],
-        translateY: [30, 0],
-        duration: 1000,
-        easing: 'easeOutExpo',
-      }, '-=400')
-      .add({
-        targets: '.hero-cta',
-        opacity: [0, 1],
-        scale: [0.8, 1],
-        duration: 600,
-        easing: 'easeOutExpo',
-      }, '-=600');
+﻿---
+import { config } from '../data/config.js';
+---
+
+<section id="home" class="hero ml-[280px] min-h-screen flex items-center justify-center py-24 px-8">
+  <div class="max-w-[1200px] mx-auto text-center">
+    <h1 class="hero-title text-[clamp(3rem,8vw,5rem)] font-bold text-[#e0e0e0] mb-6 opacity-0">
+      {config.personal.name}
+    </h1>
+    <p class="hero-tagline text-[clamp(1.25rem,3vw,1.75rem)] text-[#a0a0a0] mb-8 max-w-3xl mx-auto leading-relaxed opacity-0 translate-y-8">
+      {config.personal.tagline}
+    </p>
+    <a href="#projects" class="hero-cta inline-block px-8 py-4 bg-[#3b82f6] text-white font-semibold rounded-lg transition-all duration-300 hover:bg-[#2563eb] hover:-translate-y-1 hover:shadow-lg opacity-0 scale-90">
+      View My Work
+    </a>
+  </div>
+</section>
+
+<style>
+  /* Fallback: Show hero if JavaScript fails */
+  .hero:not(.js-loaded) .hero-title,
+  .hero:not(.js-loaded) .hero-tagline,
+  .hero:not(.js-loaded) .hero-cta {
+    opacity: 1;
+    transform: none;
   }
+  
+  /* Fallback animation after 2 seconds */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero:not(.js-loaded) .hero-title,
+    .hero:not(.js-loaded) .hero-tagline,
+    .hero:not(.js-loaded) .hero-cta {
+      animation: fadeInFallback 0.1s ease-out 2s forwards;
+    }
+  }
+  
+  @keyframes fadeInFallback {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  
+  .hero-title .letter {
+    display: inline-block;
+  }
+  
+  @media (max-width: 968px) {
+    .hero {
+      margin-left: 0;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const { gsap } = await import('gsap');
+      
+      const heroTitle = document.querySelector('.hero-title');
+      const heroTagline = document.querySelector('.hero-tagline');
+      const heroCta = document.querySelector('.hero-cta');
+      
+      if (heroTitle) {
+        // Split title into letters
+        heroTitle.innerHTML = heroTitle.textContent?.replace(/\S/g, "<span class='letter'>$&</span>") || '';
+        
+        const letters = heroTitle.querySelectorAll('.letter');
+        
+        // Create GSAP timeline
+        const tl = gsap.timeline();
+        
+        // Animate letters
+        tl.from(letters, {
+          scale: 0,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.07,
+          ease: "expo.out"
+        });
+        
+        // Animate tagline
+        tl.from(heroTagline, {
+          opacity: 0,
+          y: 30,
+          duration: 1,
+          ease: "expo.out"
+        }, "-=0.4");
+        
+        // Animate CTA
+        tl.from(heroCta, {
+          opacity: 0,
+          scale: 0.8,
+          duration: 0.6,
+          ease: "expo.out"
+        }, "-=0.6");
+        
+        // Mark as loaded
+        document.querySelector('.hero')?.classList.add('js-loaded');
+      }
+    } catch (error) {
+      console.error('Animation error:', error);
+      // Fallback: show elements
+      document.querySelectorAll('.hero-title, .hero-tagline, .hero-cta').forEach(el => {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
+    }
+  });
 </script>

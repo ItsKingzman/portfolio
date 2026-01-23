@@ -2,21 +2,31 @@
 import { config } from '../data/config.js';
 ---
 
-<section class="about section" id="about">
-  <div class="container">
-    <div class="about-content">
-      <div class="about-image">
+<section id="about" class="about ml-[280px] py-24">
+  <div class="max-w-[1200px] mx-auto px-8">
+    <div class="about-content grid grid-cols-[350px_1fr] gap-16 items-start">
+      <div class="about-image relative opacity-0 -translate-x-8">
         {config.personal.avatar && (
-          <img src={config.personal.avatar} alt={config.personal.name} />
+          <img 
+            src={config.personal.avatar} 
+            alt={config.personal.name}
+            class="w-full h-auto rounded-lg shadow-lg transition-transform duration-300 hover:scale-[1.02]"
+          />
         )}
-        <div class="about-image-label">This is me.</div>
+        <div class="about-image-label absolute -bottom-4 -right-4 bg-[#3b82f6] text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-lg opacity-0 scale-80">
+          This is me.
+        </div>
       </div>
       
-      <div class="about-text">
-        <h3 class="about-intro">{config.personal.bio.intro}</h3>
+      <div class="about-text pt-4 opacity-0 translate-x-8">
+        <h3 class="about-intro text-[clamp(1.75rem,3vw,2.5rem)] text-[#e0e0e0] mb-8">
+          {config.personal.bio.intro}
+        </h3>
         <div class="about-description">
           {config.personal.bio.description.split('\n\n').map(paragraph => (
-            <p>{paragraph}</p>
+            <p class="mb-6 text-lg leading-relaxed text-[#a0a0a0]">
+              {paragraph}
+            </p>
           ))}
         </div>
       </div>
@@ -25,24 +35,6 @@ import { config } from '../data/config.js';
 </section>
 
 <style>
-  .about {
-    margin-left: 280px;
-    padding: var(--spacing-xl) 0;
-  }
-  
-  .about-content {
-    display: grid;
-    grid-template-columns: 350px 1fr;
-    gap: 4rem;
-    align-items: start;
-  }
-  
-  .about-image {
-    position: relative;
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  
   /* Fallback: Show about section if JavaScript fails */
   #about:not(.js-loaded) .about-image,
   #about:not(.js-loaded) .about-text,
@@ -67,52 +59,6 @@ import { config } from '../data/config.js';
     }
   }
   
-  .about-image img {
-    width: 100%;
-    height: auto;
-    border-radius: var(--border-radius);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s ease;
-  }
-  
-  .about-image:hover img {
-    transform: scale(1.02);
-  }
-  
-  .about-image-label {
-    position: absolute;
-    bottom: -1rem;
-    right: -1rem;
-    background: var(--color-accent);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--border-radius);
-    font-size: 0.875rem;
-    font-weight: 600;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  
-  .about-text {
-    padding-top: 1rem;
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  
-  .about-intro {
-    font-size: clamp(1.75rem, 3vw, 2.5rem);
-    color: var(--color-text);
-    margin-bottom: 2rem;
-  }
-  
-  .about-description p {
-    margin-bottom: 1.5rem;
-    font-size: 1.125rem;
-    line-height: 1.8;
-    color: var(--color-text-secondary);
-  }
-  
   @media (max-width: 968px) {
     .about {
       margin-left: 0;
@@ -133,10 +79,8 @@ import { config } from '../data/config.js';
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     try {
-      const animeModule = await import('animejs');
-      const anime = animeModule.default;
+      const { gsap } = await import('gsap');
       
-      // Animate about section
       const aboutSection = document.querySelector('#about');
       if (aboutSection) {
         let hasAnimated = false;
@@ -151,31 +95,27 @@ import { config } from '../data/config.js';
           
           // Animate image and text simultaneously
           if (image && text) {
-            anime({
-              targets: [image, text],
-              opacity: [0, 1],
-              translateX: [
-                {value: -30, duration: 0},
-                {value: 0, duration: 1000}
-              ],
-              delay: anime.stagger(100, {start: 0}),
-              easing: 'easeOutCubic',
+            gsap.from([image, text], {
+              opacity: 0,
+              x: (index) => index === 0 ? -30 : 30,
+              duration: 1,
+              stagger: 0.1,
+              ease: "power2.out"
             });
           }
           
           // Animate label with bounce
           if (label) {
-            anime({
-              targets: label,
-              opacity: [0, 1],
-              scale: [0.8, 1],
-              duration: 600,
-              delay: 800,
-              easing: 'easeOutElastic(1, .8)',
+            gsap.from(label, {
+              opacity: 0,
+              scale: 0.8,
+              duration: 0.6,
+              delay: 0.8,
+              ease: "elastic.out(1, 0.8)"
             });
           }
           
-          // Mark as loaded after animation starts
+          // Mark as loaded
           aboutSection.classList.add('js-loaded');
         };
         
@@ -195,10 +135,9 @@ import { config } from '../data/config.js';
         
         observer.observe(aboutSection);
         
-        // Use double requestAnimationFrame to ensure DOM is ready, then check viewport
+        // Check if already in viewport
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            // Check if already in viewport with more lenient check
             const rect = aboutSection.getBoundingClientRect();
             const windowHeight = window.innerHeight || document.documentElement.clientHeight;
             if (rect.top < windowHeight + 200 && rect.bottom > -200) {
@@ -207,7 +146,7 @@ import { config } from '../data/config.js';
           });
         });
         
-        // Fallback timeout - show after 1.5 seconds if not animated
+        // Fallback timeout
         setTimeout(() => {
           if (!hasAnimated) {
             animateAbout();

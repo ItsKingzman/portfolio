@@ -205,8 +205,7 @@ import { config } from '../data/config.js';
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     try {
-      const animeModule = await import('animejs');
-      const anime = animeModule.default;
+      const { gsap } = await import('gsap');
       
       const projectsGrid = document.querySelector('.projects-grid');
       
@@ -217,12 +216,11 @@ import { config } from '../data/config.js';
       const animateTitle = () => {
         if (titleAnimated || !sectionTitle) return;
         titleAnimated = true;
-        anime({
-          targets: sectionTitle,
-          opacity: [0, 1],
-          translateY: [30, 0],
-          duration: 1000,
-          easing: 'easeOutExpo',
+        gsap.from(sectionTitle, {
+          opacity: 0,
+          y: 30,
+          duration: 1,
+          ease: "expo.out"
         });
       };
       
@@ -273,38 +271,40 @@ import { config } from '../data/config.js';
               projectsGrid.classList.add('js-loaded');
             }
             
-            anime({
-              targets: card,
-              opacity: [0, 1],
-              translateY: [60, 0],
-              scale: [0.9, 1],
-              duration: 1000,
-              delay: index * 100,
-              easing: 'easeOutCubic',
+            // Animate card with GSAP
+            gsap.from(card, {
+              opacity: 0,
+              y: 60,
+              scale: 0.9,
+              duration: 1,
+              delay: index * 0.1,
+              ease: "power2.out"
             });
             
+            // Animate tags with stagger
             const tags = card.querySelectorAll('.project-tag');
             if (tags.length > 0) {
-              anime({
-                targets: tags,
-                opacity: [0, 1],
-                translateY: [20, 0],
-                scale: [0.8, 1],
-                duration: 800,
-                delay: anime.stagger(100, {start: 600 + index * 150}),
-                easing: 'spring(1, 80, 10, 0)',
+              gsap.from(tags, {
+                opacity: 0,
+                y: 20,
+                scale: 0.8,
+                duration: 0.8,
+                delay: 0.6 + index * 0.15,
+                stagger: 0.1,
+                ease: "back.out(1.7)"
               });
             }
             
+            // Animate links
             const links = card.querySelectorAll('.project-link');
             if (links.length > 0) {
-              anime({
-                targets: links,
-                opacity: [0, 1],
-                translateX: [-20, 0],
-                duration: 800,
-                delay: anime.stagger(100, {start: 800 + index * 150}),
-                easing: 'easeOutExpo',
+              gsap.from(links, {
+                opacity: 0,
+                x: -20,
+                duration: 0.8,
+                delay: 0.8 + index * 0.15,
+                stagger: 0.1,
+                ease: "expo.out"
               });
             }
             
@@ -333,14 +333,13 @@ import { config } from '../data/config.js';
               }
               
               const index = parseInt(card.getAttribute('data-index') || '0');
-              anime({
-                targets: card,
-                opacity: [0, 1],
-                translateY: [60, 0],
-                scale: [0.9, 1],
-                duration: 1000,
-                delay: index * 100,
-                easing: 'easeOutCubic',
+              gsap.from(card, {
+                opacity: 0,
+                y: 60,
+                scale: 0.9,
+                duration: 1,
+                delay: index * 0.1,
+                ease: "power2.out"
               });
             }
           });
@@ -360,24 +359,41 @@ import { config } from '../data/config.js';
         
         let hideTimeout;
         let isHoveringPreview = false;
+        let previewTween = null;
         
         const showPreview = () => {
           clearTimeout(hideTimeout);
           isHoveringPreview = true;
           positionPreview();
-          preview.style.opacity = '1';
-          preview.style.visibility = 'visible';
-          preview.style.pointerEvents = 'auto';
-          preview.style.transform = 'translateX(0) scale(1)';
+          
+          if (previewTween) previewTween.kill();
+          previewTween = gsap.to(preview, {
+            opacity: 1,
+            visibility: 'visible',
+            scale: 1,
+            x: 0,
+            duration: 0.3,
+            ease: "power2.out",
+            onStart: () => {
+              preview.style.pointerEvents = 'auto';
+            }
+          });
         };
         
         const hidePreview = () => {
           clearTimeout(hideTimeout);
           hideTimeout = setTimeout(() => {
             if (!isHoveringPreview) {
-              preview.style.opacity = '0';
-              preview.style.visibility = 'hidden';
-              preview.style.pointerEvents = 'none';
+              if (previewTween) previewTween.kill();
+              previewTween = gsap.to(preview, {
+                opacity: 0,
+                visibility: 'hidden',
+                duration: 0.3,
+                ease: "power2.in",
+                onComplete: () => {
+                  preview.style.pointerEvents = 'none';
+                }
+              });
             }
           }, 100);
         };
@@ -453,7 +469,7 @@ import { config } from '../data/config.js';
           }
         });
         
-        // Magnetic effect
+        // Magnetic effect with GSAP
         card.addEventListener('mousemove', (e) => {
           const rect = card.getBoundingClientRect();
           const x = e.clientX - rect.left;
@@ -465,12 +481,11 @@ import { config } from '../data/config.js';
           
           const img = card.querySelector('.project-image img');
           if (img) {
-            anime({
-              targets: img,
-              translateX: deltaX * 10,
-              translateY: deltaY * 10,
-              duration: 150,
-              easing: 'easeOutQuad',
+            gsap.to(img, {
+              x: deltaX * 10,
+              y: deltaY * 10,
+              duration: 0.15,
+              ease: "power2.out"
             });
           }
         });
@@ -478,12 +493,11 @@ import { config } from '../data/config.js';
         card.addEventListener('mouseleave', () => {
           const img = card.querySelector('.project-image img');
           if (img) {
-            anime({
-              targets: img,
-              translateX: 0,
-              translateY: 0,
-              duration: 100,
-              easing: 'easeOutElastic(1, .6)',
+            gsap.to(img, {
+              x: 0,
+              y: 0,
+              duration: 0.1,
+              ease: "elastic.out(1, 0.6)"
             });
           }
         });

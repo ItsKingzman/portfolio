@@ -2,13 +2,17 @@
 import { config } from '../data/config.js';
 ---
 
-<section class="stats section-small">
-  <div class="container">
-    <div class="stats-grid">
+<section class="stats ml-[280px] py-16 border-t border-[#333]">
+  <div class="max-w-[1200px] mx-auto px-8">
+    <div class="stats-grid grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-12">
       {config.stats.map((stat, index) => (
-        <div class="stat-card">
-          <h3 class="stat-number">{stat.number}</h3>
-          <p class="stat-label">{stat.label}</p>
+        <div class="stat-card text-center opacity-0 translate-y-8 scale-90 bg-white/[0.03] backdrop-blur-[10px] border border-white/10 rounded-2xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)] transition-all duration-300 hover:bg-white/[0.05] hover:border-[#3b82f6]/30 hover:shadow-[0_8px_32px_rgba(59,130,246,0.2),inset_0_1px_0_rgba(255,255,255,0.15)] hover:-translate-y-1 hover:scale-100">
+          <h3 class="stat-number text-[clamp(2.5rem,5vw,4rem)] font-extrabold text-[#3b82f6] mb-2 leading-none">
+            {stat.number}
+          </h3>
+          <p class="stat-label text-base text-[#a0a0a0] font-medium">
+            {stat.label}
+          </p>
         </div>
       ))}
     </div>
@@ -16,42 +20,6 @@ import { config } from '../data/config.js';
 </section>
 
 <style>
-  .stats {
-    margin-left: 280px;
-    padding: 4rem 0;
-    border-top: 1px solid var(--color-border);
-  }
-  
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 3rem;
-  }
-  
-  .stat-card {
-    text-align: center;
-    opacity: 0;
-    transform: translateY(30px) scale(0.9);
-    /* Glassmorphism effect */
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 2rem 1.5rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-  }
-  
-  .stat-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(59, 130, 246, 0.3);
-    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    transform: translateY(-5px) scale(1);
-  }
-  
   /* Fallback: Show stats if JavaScript fails */
   .stats:not(.js-loaded) .stat-card {
     opacity: 1;
@@ -72,20 +40,6 @@ import { config } from '../data/config.js';
     }
   }
   
-  .stat-number {
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    font-weight: 800;
-    color: var(--color-accent);
-    margin-bottom: 0.5rem;
-    line-height: 1;
-  }
-  
-  .stat-label {
-    font-size: 1rem;
-    color: var(--color-text-secondary);
-    font-weight: 500;
-  }
-  
   @media (max-width: 968px) {
     .stats {
       margin-left: 0;
@@ -96,10 +50,8 @@ import { config } from '../data/config.js';
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     try {
-      const animeModule = await import('animejs');
-      const anime = animeModule.default;
+      const { gsap } = await import('gsap');
       
-      // Animate stats section
       const statsSection = document.querySelector('.stats');
       if (statsSection) {
         const observerOptions = {
@@ -115,33 +67,31 @@ import { config } from '../data/config.js';
           
           const statCards = statsSection.querySelectorAll('.stat-card');
           
+          // Animate cards with GSAP
+          gsap.from(statCards, {
+            opacity: 0,
+            y: 30,
+            scale: 0.9,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power2.out"
+          });
+          
           // Animate numbers counting up
           statCards.forEach((card, index) => {
             const numberEl = card.querySelector('.stat-number');
             const finalValue = numberEl?.textContent || '';
             
-            anime({
-              targets: card,
-              opacity: [0, 1],
-              translateY: [30, 0],
-              scale: [0.9, 1],
-              duration: 800,
-              delay: index * 100,
-              easing: 'easeOutCubic',
-            });
-            
-            // Optional: Add number counting animation
             if (numberEl && finalValue.match(/\d+/)) {
               const numValue = parseInt(finalValue.replace(/\D/g, ''));
               if (numValue) {
-                anime({
-                  targets: { value: 0 },
+                gsap.to({ value: 0 }, {
                   value: numValue,
-                  duration: 1500,
-                  delay: index * 100 + 200,
-                  easing: 'easeOutExpo',
-                  update: function(anim) {
-                    const currentValue = Math.floor(anim.animatables[0].target.value);
+                  duration: 1.5,
+                  delay: index * 0.1 + 0.2,
+                  ease: "expo.out",
+                  onUpdate: function() {
+                    const currentValue = Math.floor(this.targets()[0].value);
                     if (finalValue.includes('+')) {
                       numberEl.textContent = currentValue + '+';
                     } else if (finalValue.includes('K+')) {
@@ -155,7 +105,7 @@ import { config } from '../data/config.js';
             }
           });
           
-          // Mark as loaded after animation starts
+          // Mark as loaded
           statsSection.classList.add('js-loaded');
         };
         
@@ -170,7 +120,7 @@ import { config } from '../data/config.js';
         
         observer.observe(statsSection);
         
-        // Use requestAnimationFrame to ensure DOM is ready, then check viewport
+        // Check if already in viewport
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             const rect = statsSection.getBoundingClientRect();
@@ -181,7 +131,7 @@ import { config } from '../data/config.js';
           });
         });
         
-        // Fallback timeout - show after 1.5 seconds if not animated
+        // Fallback timeout
         setTimeout(() => {
           if (!hasAnimated) {
             animateStats();
@@ -190,7 +140,6 @@ import { config } from '../data/config.js';
       }
     } catch (error) {
       console.error('Animation error:', error);
-      // Fallback: show elements
       document.querySelectorAll('.stat-card').forEach(el => {
         el.style.opacity = '1';
         el.style.transform = 'none';

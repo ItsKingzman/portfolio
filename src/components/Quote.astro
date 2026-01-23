@@ -1,28 +1,17 @@
 ---
 ---
 
-<section class="quote section" id="quote">
-  <div class="container">
-    <div class="about-quote">
-      <h2>I believe in a user centered design approach, ensuring that every project I work on is tailored to meet the specific needs of its users.</h2>
+<section id="quote" class="quote ml-[280px] py-24">
+  <div class="max-w-[1200px] mx-auto px-8">
+    <div class="about-quote max-w-[900px] mx-auto text-center opacity-0 translate-y-8">
+      <h2 class="text-[clamp(1.5rem,3vw,2.25rem)] leading-relaxed text-[#e0e0e0] font-normal">
+        I believe in a user centered design approach, ensuring that every project I work on is tailored to meet the specific needs of its users.
+      </h2>
     </div>
   </div>
 </section>
 
 <style>
-  .quote {
-    margin-left: 280px;
-    padding: var(--spacing-xl) 0;
-  }
-  
-  .about-quote {
-    max-width: 900px;
-    margin: 0 auto;
-    text-align: center;
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  
   /* Fallback: Show quote if JavaScript fails */
   #quote:not(.js-loaded) .about-quote {
     opacity: 1;
@@ -43,20 +32,9 @@
     }
   }
   
-  .about-quote h2 {
-    font-size: clamp(1.5rem, 3vw, 2.25rem);
-    line-height: 1.5;
-    color: var(--color-text);
-    font-weight: 400;
-  }
-  
   @media (max-width: 968px) {
     .quote {
       margin-left: 0;
-    }
-    
-    .about-quote {
-      margin-bottom: 0;
     }
   }
 </style>
@@ -64,10 +42,8 @@
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     try {
-      const animeModule = await import('animejs');
-      const anime = animeModule.default;
+      const { gsap } = await import('gsap');
       
-      // Animate quote section
       const quoteSection = document.querySelector('#quote');
       if (quoteSection) {
         let hasAnimated = false;
@@ -78,16 +54,15 @@
           
           const quote = quoteSection.querySelector('.about-quote');
           if (quote) {
-            anime({
-              targets: quote,
-              opacity: [0, 1],
-              translateY: [30, 0],
-              duration: 1000,
-              easing: 'easeOutExpo',
+            gsap.from(quote, {
+              opacity: 0,
+              y: 30,
+              duration: 1,
+              ease: "expo.out"
             });
           }
           
-          // Mark as loaded after animation starts
+          // Mark as loaded
           quoteSection.classList.add('js-loaded');
         };
         
@@ -107,10 +82,9 @@
         
         observer.observe(quoteSection);
         
-        // Use double requestAnimationFrame to ensure DOM is ready, then check viewport
+        // Check if already in viewport
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            // Check if already in viewport with more lenient check
             const rect = quoteSection.getBoundingClientRect();
             const windowHeight = window.innerHeight || document.documentElement.clientHeight;
             if (rect.top < windowHeight + 200 && rect.bottom > -200) {
@@ -119,7 +93,7 @@
           });
         });
         
-        // Fallback timeout - show after 1.5 seconds if not animated
+        // Fallback timeout
         setTimeout(() => {
           if (!hasAnimated) {
             animateQuote();
