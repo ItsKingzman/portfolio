@@ -107,7 +107,7 @@ My approach focuses on creating scalable, high-performing solutions tailored to 
       title: "Holmes Law Team",
       description: "Full site redesign and WordPress rebuild with custom layouts, performance optimization, and firm-branded UX. Implemented reusable templates, structured content, and on-page SEO foundations to improve engagement and lead conversions.",
       image: "/images/projects/holmeslogo.png",
-      previewImage: "/images/projects/homlesmlawteampage.png",
+      previewImage: "/images/projects/holmeslawteampage.png",
       tags: ["WordPress", "Custom Design", "Elementor Pro", "SEO", "Performance"],
       link: "https://holmeslawteam.com/",
       github: "",
