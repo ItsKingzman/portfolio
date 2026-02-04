@@ -97,7 +97,7 @@ My approach focuses on creating scalable, high-performing solutions tailored to 
       title: "Itaca",
       description: "Hospitality website for luxury lakefront resort with immersive visuals, custom booking integration, and multilingual support",
       image: "/images/projects/itaca.png",
-      previewImage: "/images/projects/itacapage.webp",
+      previewImage: "/images/projects/itaca.webp",
       tags: ["WordPress", "Custom Design", "Hospitality", "UX"],
       link: "https://itacagroup.com/",
       github: "",
